@@ -51,7 +51,7 @@ public class City {
     private Double longitude;
 
     /**
-     * Default constructor, sets {@link dev.karlkadak.backend.entity.City#gatherData} field to
+     * Default constructor, sets {@link #gatherData} field to
      * {@link java.lang.Boolean#TRUE}
      *
      * @param name      The human-readable name of the city
@@ -66,7 +66,7 @@ public class City {
     }
 
     /**
-     * Constructor with specifying a value for the {@link dev.karlkadak.backend.entity.City#gatherData} field
+     * Constructor with specifying a value for the {@link #gatherData} field
      *
      * @param name       The human-readable name of the city
      * @param gatherData Specifies if weather data collection for the city is enabled
