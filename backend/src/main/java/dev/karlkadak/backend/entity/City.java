@@ -30,7 +30,6 @@ public class City {
      */
     @NonNull
     @Column(nullable = false)
-    @Getter
     @Setter
     private Boolean gatherData;
 
@@ -61,22 +60,6 @@ public class City {
     public City(@NonNull String name, @NonNull Double latitude, @NonNull Double longitude) {
         this.name = name;
         this.gatherData = Boolean.TRUE;
-        this.latitude = latitude;
-        this.longitude = longitude;
-    }
-
-    /**
-     * Constructor with specifying a value for the {@link #gatherData} field
-     *
-     * @param name       The human-readable name of the city
-     * @param gatherData Specifies if weather data collection for the city is enabled
-     * @param latitude   Geographical latitude of the city
-     * @param longitude  Geographical longitude of the city
-     */
-    public City(@NonNull String name, @NonNull Boolean gatherData, @NonNull Double latitude,
-                @NonNull Double longitude) {
-        this.name = name;
-        this.gatherData = gatherData;
         this.latitude = latitude;
         this.longitude = longitude;
     }

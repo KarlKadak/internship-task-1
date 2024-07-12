@@ -34,7 +34,6 @@ public class WeatherData {
      */
     @NonNull
     @Column(nullable = false)
-    @Getter
     private Long timestamp;
 
     /**
