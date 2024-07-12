@@ -106,7 +106,7 @@ public class WeatherDataImporter {
     private WeatherData requestData(City city)
             throws Exception {
         // Initialize datapoint variables
-        final Long timestamp;
+        final long timestamp;
         Double airTemperature = null;
         Double windSpeed = null;
         Integer humidity = null;
