@@ -112,8 +112,8 @@ public class WeatherDataImporter {
         Integer humidity = null;
 
         // Variables needed for performing the API request
-        Double latitude = city.getLatitude();
-        Double longitude = city.getLongitude();
+        Double latitude = city.getCoordinate().getLatitude();
+        Double longitude = city.getCoordinate().getLongitude();
         String requestUrl = String.format(
                 "https://api.openweathermap.org/data/2.5/weather?units=metric&lat=%f&lon=%f&appid=%s", latitude,
                 longitude, apiKey);

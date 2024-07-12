@@ -15,7 +15,7 @@ public class City {
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private long id;
 
     /**
      * The human-readable name of the city
@@ -28,30 +28,20 @@ public class City {
     /**
      * Specifies if weather data collection for the city is enabled
      */
-    @NonNull
     @Column(nullable = false)
     @Setter
-    private Boolean gatherData;
+    private boolean gatherData;
 
     /**
-     * Geographical latitude of the city
+     * Specifies the geographical location of the city
      */
     @NonNull
-    @Column(nullable = false)
+    @Embedded
     @Getter
-    private Double latitude;
+    private Coordinate coordinate;
 
     /**
-     * Geographical longitude of the city
-     */
-    @NonNull
-    @Column(nullable = false)
-    @Getter
-    private Double longitude;
-
-    /**
-     * Default constructor, sets {@link #gatherData} field to
-     * {@link java.lang.Boolean#TRUE}
+     * Default constructor, sets {@link #gatherData} field to {@link java.lang.Boolean#TRUE TRUE}
      *
      * @param name      The human-readable name of the city
      * @param latitude  Geographical latitude of the city
@@ -60,7 +50,6 @@ public class City {
     public City(@NonNull String name, @NonNull Double latitude, @NonNull Double longitude) {
         this.name = name;
         this.gatherData = Boolean.TRUE;
-        this.latitude = latitude;
-        this.longitude = longitude;
+        this.coordinate = new Coordinate(latitude, longitude);
     }
 }
