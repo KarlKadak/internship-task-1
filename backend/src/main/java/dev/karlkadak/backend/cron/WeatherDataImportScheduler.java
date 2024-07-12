@@ -43,7 +43,6 @@ public class WeatherDataImportScheduler {
      * {@link dev.karlkadak.backend.service.WeatherDataImporter#defaultImport WeatherDataImporter.defaultImport} method
      * to run using the cron expression specified in application.properties
      */
-    @PostConstruct
     public void scheduleImport() {
         taskScheduler.schedule(weatherDataImporter::defaultImport, new CronTrigger(importerCronExpression));
         logger.info("Scheduled weather data fetching.");
