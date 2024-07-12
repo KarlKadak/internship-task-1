@@ -4,6 +4,7 @@ import dev.karlkadak.backend.entity.City;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -24,4 +25,13 @@ public interface CityRepository extends JpaRepository<City, Long> {
      * {@link dev.karlkadak.backend.entity.City#name name} was not found
      */
     public Optional<City> findByName(String name);
+
+    /**
+     * Finds all {@link dev.karlkadak.backend.entity.City City} objects which have
+     * {@link dev.karlkadak.backend.entity.City#gatherData gatherData} set as {@link java.lang.Boolean#TRUE TRUE}
+     *
+     * @return A {@link java.util.List} containing all {@link dev.karlkadak.backend.entity.City City} objects which have
+     * {@link dev.karlkadak.backend.entity.City#gatherData gatherData} set as {@link java.lang.Boolean#TRUE TRUE}
+     */
+    public List<City> findAllByGatherDataTrue();
 }

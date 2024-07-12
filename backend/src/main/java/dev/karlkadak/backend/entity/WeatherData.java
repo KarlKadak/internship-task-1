@@ -54,4 +54,22 @@ public class WeatherData {
      */
     @Getter
     private Integer humidity;
+
+    /**
+     * Default constructor
+     *
+     * @param city           The city for which the data is collected
+     * @param timestamp      UNIX timestamp of the data calculation, UTC
+     * @param airTemperature Air temperature at time of data calculation, Celsius<br> Null in case of missing value
+     * @param windSpeed      Wind speed at time of data calculation, meter/sec<br> Null in case of missing value
+     * @param humidity       Humidity at time of data calculation, %<br> Null in case of missing value
+     */
+    public WeatherData(@NonNull City city, @NonNull Long timestamp, Double airTemperature, Double windSpeed,
+                       Integer humidity) {
+        this.city = city;
+        this.timestamp = timestamp;
+        this.airTemperature = airTemperature;
+        this.windSpeed = windSpeed;
+        this.humidity = humidity;
+    }
 }
