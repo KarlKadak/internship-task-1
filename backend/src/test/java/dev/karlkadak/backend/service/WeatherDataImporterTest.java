@@ -58,13 +58,16 @@ class WeatherDataImporterTest {
     }
 
     @Test
-    void testDefaultImport_LogsError()
-            throws JsonProcessingException {
+    void testDefaultImport_LogsError() {
         List<City> cities = List.of(new City("City1", 1.0, 1.0));
         when(cityRepository.findAllByImportingDataTrue()).thenReturn(cities);
         Map<String, Object> responseMap = new HashMap<>();
 
-        when(objectMapper.readValue(anyString(), any(TypeReference.class))).thenReturn(responseMap);
+        try {
+            when(objectMapper.readValue(anyString(), any(TypeReference.class))).thenReturn(responseMap);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
 
         weatherDataImporter.defaultImport();
 
