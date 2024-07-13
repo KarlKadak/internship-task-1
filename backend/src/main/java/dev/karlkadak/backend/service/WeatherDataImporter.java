@@ -9,7 +9,7 @@ import dev.karlkadak.backend.repository.CityRepository;
 import dev.karlkadak.backend.repository.WeatherDataRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
@@ -20,7 +20,7 @@ import java.util.logging.Logger;
  * Used for importing weather data to the database from <a href="https://openweathermap.org/api">OpenWeather API</a><br>
  * Also logs the results of imports using {@link java.util.logging.Logger}
  */
-@Component
+@Service
 public class WeatherDataImporter {
 
     private final WeatherDataRepository weatherDataRepository;
