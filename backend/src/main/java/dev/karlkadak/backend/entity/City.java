@@ -29,8 +29,9 @@ public class City {
      * Specifies if weather data collection for the city is enabled
      */
     @Column(nullable = false)
+    @Getter
     @Setter
-    private boolean gatherData;
+    private boolean importingData;
 
     /**
      * Specifies the geographical location of the city
@@ -38,10 +39,11 @@ public class City {
     @NonNull
     @Embedded
     @Getter
-    private Coordinate coordinate;
+    private CoordinatePair coordinatePair;
 
     /**
-     * Default constructor, sets {@link #gatherData} field to {@link java.lang.Boolean#TRUE TRUE}
+     * Default constructor using coordinate values, sets {@link #importingData} field to
+     * {@link java.lang.Boolean#TRUE TRUE}
      *
      * @param name      The human-readable name of the city
      * @param latitude  Geographical latitude of the city
@@ -49,7 +51,7 @@ public class City {
      */
     public City(@NonNull String name, @NonNull Double latitude, @NonNull Double longitude) {
         this.name = name;
-        this.gatherData = Boolean.TRUE;
-        this.coordinate = new Coordinate(latitude, longitude);
+        this.importingData = Boolean.TRUE;
+        this.coordinatePair = new CoordinatePair(latitude, longitude);
     }
 }

@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Embeddable
 @NoArgsConstructor
 @AllArgsConstructor
-public class Coordinate {
+public class CoordinatePair {
 
     /**
      * Geographical latitude of the city

@@ -48,11 +48,11 @@ class WeatherDataImporterTest {
 
     @Test
     void testDefaultImport_NoCitiesToFetch() {
-        when(cityRepository.findAllByGatherDataTrue()).thenReturn(Collections.emptyList());
+        when(cityRepository.findAllByImportingDataTrue()).thenReturn(Collections.emptyList());
 
         weatherDataImporter.defaultImport();
 
-        verify(cityRepository, times(1)).findAllByGatherDataTrue();
+        verify(cityRepository, times(1)).findAllByImportingDataTrue();
         verifyNoInteractions(logger);
         verifyNoInteractions(weatherDataRepository);
     }
@@ -61,7 +61,7 @@ class WeatherDataImporterTest {
     void testDefaultImport_LogsError()
             throws JsonProcessingException {
         List<City> cities = List.of(new City("City1", 1.0, 1.0));
-        when(cityRepository.findAllByGatherDataTrue()).thenReturn(cities);
+        when(cityRepository.findAllByImportingDataTrue()).thenReturn(cities);
         Map<String, Object> responseMap = new HashMap<>();
 
         when(objectMapper.readValue(anyString(), any(TypeReference.class))).thenReturn(responseMap);
@@ -78,7 +78,7 @@ class WeatherDataImporterTest {
         City city1 = new City("City1", 10.08, 15.0015);
         City city2 = new City("City2", -70.02, -25.00005);
         List<City> cities = Arrays.asList(city1, city2);
-        when(cityRepository.findAllByGatherDataTrue()).thenReturn(cities);
+        when(cityRepository.findAllByImportingDataTrue()).thenReturn(cities);
 
         when(restTemplate.getForObject(anyString(), eq(String.class))).thenReturn("""
                                                                                           {
@@ -101,7 +101,7 @@ class WeatherDataImporterTest {
 
         weatherDataImporter.defaultImport();
 
-        verify(cityRepository, times(1)).findAllByGatherDataTrue();
+        verify(cityRepository, times(1)).findAllByImportingDataTrue();
         verify(weatherDataRepository, times(2)).save(any(WeatherData.class));
     }
 }

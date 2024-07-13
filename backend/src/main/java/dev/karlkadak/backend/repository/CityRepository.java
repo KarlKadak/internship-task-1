@@ -28,10 +28,10 @@ public interface CityRepository extends JpaRepository<City, Long> {
 
     /**
      * Finds all {@link dev.karlkadak.backend.entity.City City} objects which have
-     * {@link dev.karlkadak.backend.entity.City#gatherData gatherData} set as {@link java.lang.Boolean#TRUE TRUE}
+     * {@link dev.karlkadak.backend.entity.City#importingData importingData} set as {@link java.lang.Boolean#TRUE TRUE}
      *
      * @return A {@link java.util.List} containing all {@link dev.karlkadak.backend.entity.City City} objects which have
-     * {@link dev.karlkadak.backend.entity.City#gatherData gatherData} set as {@link java.lang.Boolean#TRUE TRUE}
+     * {@link dev.karlkadak.backend.entity.City#importingData importingData} set as {@link java.lang.Boolean#TRUE TRUE}
      */
-    List<City> findAllByGatherDataTrue();
+    List<City> findAllByImportingDataTrue();
 }

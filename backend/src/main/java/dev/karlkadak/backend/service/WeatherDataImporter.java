@@ -48,11 +48,11 @@ public class WeatherDataImporter {
 
     /**
      * Fetches the weather data of all {@link dev.karlkadak.backend.entity.City City} objects which have
-     * {@link dev.karlkadak.backend.entity.City#gatherData gatherData} set as {@link java.lang.Boolean#TRUE TRUE} and
-     * saves it to the database
+     * {@link dev.karlkadak.backend.entity.City#importingData importingData} set as {@link java.lang.Boolean#TRUE TRUE}
+     * and saves it to the database
      */
     public void defaultImport() {
-        final List<City> citiesToFetch = cityRepository.findAllByGatherDataTrue();
+        final List<City> citiesToFetch = cityRepository.findAllByImportingDataTrue();
         if (citiesToFetch.isEmpty()) return;
         Integer fetchedCityCount = 0;
 
@@ -112,8 +112,8 @@ public class WeatherDataImporter {
         Integer humidity = null;
 
         // Variables needed for performing the API request
-        Double latitude = city.getCoordinate().getLatitude();
-        Double longitude = city.getCoordinate().getLongitude();
+        Double latitude = city.getCoordinatePair().getLatitude();
+        Double longitude = city.getCoordinatePair().getLongitude();
         String requestUrl = String.format(
                 "https://api.openweathermap.org/data/2.5/weather?units=metric&lat=%f&lon=%f&appid=%s", latitude,
                 longitude, apiKey);
