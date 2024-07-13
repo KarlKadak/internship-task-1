@@ -77,6 +77,10 @@ class WeatherDataImporterTest {
 
     @Test
     void testDefaultImport_WithCitiesToFetch() {
+        // Don't mock the ObjectMapper for this test, otherwise it returns null values leading to throwing an exception
+        weatherDataImporter = new WeatherDataImporter(weatherDataRepository, cityRepository, logger, restTemplate,
+                                                      new ObjectMapper());
+
         City city1 = new City("City1", 10.08, 15.0015);
         City city2 = new City("City2", -70.02, -25.00005);
         List<City> cities = Arrays.asList(city1, city2);
@@ -94,11 +98,7 @@ class WeatherDataImporterTest {
                                                                                             "dt": 1661870592
                                                                                           }
                                                                                           """);
-
-        // Don't mock the ObjectMapper for this test, otherwise it returns null values leading to throwing an exception
-        weatherDataImporter = new WeatherDataImporter(weatherDataRepository, cityRepository, logger, restTemplate,
-                                                      new ObjectMapper());
-
+        
         weatherDataImporter.defaultImport();
 
         verify(cityRepository, times(1)).findAllByImportingDataTrue();
