@@ -93,8 +93,6 @@ class WeatherDataImporterTest {
                                                                                           }
                                                                                           """);
 
-        when(weatherDataRepository.save(any(WeatherData.class))).thenReturn(null);
-
         // Don't mock the ObjectMapper for this test, otherwise it returns null values leading to throwing an exception
         weatherDataImporter = new WeatherDataImporter(weatherDataRepository, cityRepository, logger, restTemplate,
                                                       new ObjectMapper());
