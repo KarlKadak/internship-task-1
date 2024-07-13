@@ -77,7 +77,6 @@ class WeatherDataImporterTest {
 
     @Test
     void testDefaultImport_WithCitiesToFetch() {
-
         City city1 = new City("City1", 10.08, 15.0015);
         City city2 = new City("City2", -70.02, -25.00005);
         List<City> cities = Arrays.asList(city1, city2);
