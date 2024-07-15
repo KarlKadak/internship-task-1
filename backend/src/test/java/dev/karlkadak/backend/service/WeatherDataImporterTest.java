@@ -98,7 +98,7 @@ class WeatherDataImporterTest {
                                                                                             "dt": 1661870592
                                                                                           }
                                                                                           """);
-        
+
         weatherDataImporter.defaultImport();
 
         verify(cityRepository, times(1)).findAllByImportingDataTrue();
