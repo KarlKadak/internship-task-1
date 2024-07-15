@@ -1,8 +1,8 @@
 package dev.karlkadak.backend.cron;
 
 import dev.karlkadak.backend.service.WeatherDataImporter;
-import jakarta.annotation.PostConstruct;
 import lombok.Setter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.scheduling.support.CronTrigger;
@@ -31,6 +31,7 @@ public class WeatherDataImportScheduler {
     @Setter
     private String importerCronExpression;
 
+    @Autowired
     public WeatherDataImportScheduler(ThreadPoolTaskScheduler taskScheduler, WeatherDataImporter weatherDataImporter,
                                       Logger logger) {
         this.taskScheduler = taskScheduler;

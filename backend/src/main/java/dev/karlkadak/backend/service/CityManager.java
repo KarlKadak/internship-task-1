@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.karlkadak.backend.entity.City;
 import dev.karlkadak.backend.exception.CityManagementException;
 import dev.karlkadak.backend.repository.CityRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
@@ -36,6 +37,7 @@ public class CityManager {
     @Value("${openweather.api.key}")
     private String apiKey;
 
+    @Autowired
     public CityManager(CityRepository cityRepository, Logger logger, RestTemplate restTemplate,
                        ObjectMapper objectMapper) {
         this.cityRepository = cityRepository;
