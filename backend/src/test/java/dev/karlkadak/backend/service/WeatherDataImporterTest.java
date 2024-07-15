@@ -58,16 +58,12 @@ class WeatherDataImporterTest {
     }
 
     @Test
-    void testDefaultImport_LogsError() {
+    void testDefaultImport_LogsError()
+            throws JsonProcessingException {
         List<City> cities = List.of(new City("City1", 1.0, 1.0));
-        when(cityRepository.findAllByImportingDataTrue()).thenReturn(cities);
         Map<String, Object> responseMap = new HashMap<>();
-
-        try {
-            when(objectMapper.readValue(anyString(), any(TypeReference.class))).thenReturn(responseMap);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
+        doReturn(cities).when(cityRepository).findAllByImportingDataTrue();
+        doReturn(responseMap).when(objectMapper).readValue(anyString(), any(TypeReference.class));
 
         weatherDataImporter.defaultImport();
 
@@ -84,20 +80,20 @@ class WeatherDataImporterTest {
         City city1 = new City("City1", 10.08, 15.0015);
         City city2 = new City("City2", -70.02, -25.00005);
         List<City> cities = Arrays.asList(city1, city2);
-        when(cityRepository.findAllByImportingDataTrue()).thenReturn(cities);
-
-        when(restTemplate.getForObject(anyString(), eq(String.class))).thenReturn("""
-                                                                                          {
-                                                                                            "main": {
-                                                                                              "temp": 29.48,
-                                                                                              "humidity": 64
-                                                                                            },
-                                                                                            "wind": {
-                                                                                              "speed": 3.62
-                                                                                            },
-                                                                                            "dt": 1661870592
-                                                                                          }
-                                                                                          """);
+        String response = """
+                {
+                  "main": {
+                    "temp": 29.48,
+                    "humidity": 64
+                  },
+                  "wind": {
+                    "speed": 3.62
+                  },
+                  "dt": 1661870592
+                }
+                """;
+        doReturn(cities).when(cityRepository).findAllByImportingDataTrue();
+        doReturn(response).when(restTemplate).getForObject(anyString(), eq(String.class));
 
         weatherDataImporter.defaultImport();
 
@@ -115,9 +111,8 @@ class WeatherDataImporterTest {
         City city1 = new City("City1", 10.08, 15.0015);
         City city2 = new City("City2", -70.02, -25.00005);
         List<City> cities = Arrays.asList(city1, city2);
-        when(cityRepository.findAllByImportingDataTrue()).thenReturn(cities);
-
-        when(restTemplate.getForObject(anyString(), eq(String.class))).thenReturn("{ \"dt\": 1661870592 } ");
+        doReturn(cities).when(cityRepository).findAllByImportingDataTrue();
+        doReturn("{ \"dt\": 1661870592 } ").when(restTemplate).getForObject(anyString(), eq(String.class));
 
         weatherDataImporter.defaultImport();
 

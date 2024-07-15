@@ -2,9 +2,8 @@ package dev.karlkadak.backend.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.karlkadak.backend.entity.City;
-import dev.karlkadak.backend.exception.CityManagementException;
+import dev.karlkadak.backend.exception.*;
 import dev.karlkadak.backend.repository.CityRepository;
-import dev.karlkadak.backend.repository.WeatherDataRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -13,7 +12,6 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.data.domain.Example;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
 import java.util.Optional;
 import java.util.logging.Logger;
 
@@ -58,13 +56,9 @@ class CityManagerTest {
     void testEnableImporting_NewCity() {
         City newCity = new City("Tallinn", 59.4372155, 24.7453688);
         CityManager spyManager = spy(cityManager);
+        doReturn(newCity).when(spyManager).retrieveCompleteCity(anyString());
 
-        try {
-            doReturn(newCity).when(spyManager).retrieveCompleteCity(anyString());
-            spyManager.enableImporting("tallinn");
-        } catch (CityManagementException e) {
-            throw new RuntimeException(e);
-        }
+        spyManager.enableImporting("tallinn");
 
         verify(cityRepository, times(1)).save(newCity);
         verify(logger, times(1)).info(anyString());
@@ -75,14 +69,10 @@ class CityManagerTest {
         City newCity = new City("Tallinn", 59.4372155, 24.7453688);
         newCity.setImportingData(false);
         CityManager spyManager = spy(cityManager);
+        doReturn(newCity).when(spyManager).retrieveCompleteCity(anyString());
+        doReturn(true).when(cityRepository).exists(Example.of(newCity));
 
-        try {
-            doReturn(newCity).when(spyManager).retrieveCompleteCity(anyString());
-            doReturn(true).when(cityRepository).exists(Example.of(newCity));
-            spyManager.enableImporting("tallinn");
-        } catch (CityManagementException e) {
-            throw new RuntimeException(e);
-        }
+        spyManager.enableImporting("tallinn");
 
         verify(cityRepository, times(1)).save(newCity);
         verify(logger, times(1)).info(anyString());
@@ -92,29 +82,21 @@ class CityManagerTest {
     void testEnableImporting_ExistingTrackedCity() {
         City newCity = new City("Tallinn", 59.4372155, 24.7453688);
         CityManager spyManager = spy(cityManager);
-        try {
-            doReturn(newCity).when(spyManager).retrieveCompleteCity(anyString());
-        } catch (CityManagementException e) {
-            throw new RuntimeException(e);
-        }
+        doReturn(newCity).when(spyManager).retrieveCompleteCity(anyString());
         doReturn(true).when(cityRepository).exists(Example.of(newCity));
 
-        assertThrows(CityManagementException.class, () -> spyManager.enableImporting("tallinn"));
+        assertThrows(CityAlreadyBeingTrackedException.class, () -> spyManager.enableImporting("tallinn"));
 
         verify(cityRepository, times(0)).save(newCity);
         verify(logger, times(0)).info(anyString());
     }
 
     @Test
-    void testDisableImporting_EnabledCity() {
+    void testDisableImporting_ExistingTrackedCity() {
         City newCity = new City("Tallinn", 59.4372155, 24.7453688);
         doReturn(Optional.of(newCity)).when(cityRepository).findById(any());
 
-        try {
-            cityManager.disableImporting(1);
-        } catch (CityManagementException e) {
-            throw new RuntimeException(e);
-        }
+        cityManager.disableImporting(1);
 
         assertFalse(newCity.isImportingData());
         verify(cityRepository, times(1)).save(any());
@@ -122,12 +104,13 @@ class CityManagerTest {
     }
 
     @Test
-    void testDisableImporting_DisabledCity() {
+    void testDisableImporting_ExistingNotTrackedCity() {
         City newCity = new City("Tallinn", 59.4372155, 24.7453688);
         newCity.setImportingData(false);
         doReturn(Optional.of(newCity)).when(cityRepository).findById(any());
 
-        assertThrows(CityManagementException.class, () -> cityManager.disableImporting(1));
+        assertThrows(CityAlreadyNotBeingTrackedException.class, () -> cityManager.disableImporting(1));
+
         verify(cityRepository, times(0)).save(any());
         verify(logger, times(0)).info(anyString());
     }
@@ -136,7 +119,7 @@ class CityManagerTest {
     void testDisableImporting_NotExistingCity() {
         doReturn(Optional.empty()).when(cityRepository).findById(any());
 
-        assertThrows(CityManagementException.class, () -> cityManager.disableImporting(1));
+        assertThrows(CityNotFoundException.class, () -> cityManager.disableImporting(1));
     }
 
     @Test
@@ -147,11 +130,7 @@ class CityManagerTest {
         City returnedCity;
         when(cityRepository.findByName(anyString())).thenReturn(Optional.empty());
 
-        try {
-            returnedCity = cityManager.retrieveCompleteCity("tallinn");
-        } catch (CityManagementException e) {
-            throw new RuntimeException(e);
-        }
+        returnedCity = cityManager.retrieveCompleteCity("tallinn");
 
         assertTrue(
                 returnedCity.getName().equals("Tallinn") && returnedCity.getCoordinatePair().getLatitude() == 59.4372155
@@ -167,36 +146,35 @@ class CityManagerTest {
         City returnedCity;
         when(cityRepository.findByName(anyString())).thenReturn(Optional.of(existingCity));
 
-        try {
-            returnedCity = cityManager.retrieveCompleteCity("tallinn");
-        } catch (CityManagementException e) {
-            throw new RuntimeException(e);
-        }
+        returnedCity = cityManager.retrieveCompleteCity("tallinn");
 
         assertEquals(existingCity, returnedCity);
     }
 
     @Test
-    void testRetrieveCompleteCity_MalformattedName() {
-        assertThrows(CityManagementException.class, () -> cityManager.retrieveCompleteCity(""));
-        assertThrows(CityManagementException.class, () -> cityManager.retrieveCompleteCity("111"));
-        assertThrows(CityManagementException.class, () -> cityManager.retrieveCompleteCity("asd123"));
-        assertThrows(CityManagementException.class, () -> cityManager.retrieveCompleteCity("   "));
+    void testRetrieveCompleteCity_MalformedName() {
+        assertThrows(MalformedCityNameException.class, () -> cityManager.retrieveCompleteCity(""));
+        assertThrows(MalformedCityNameException.class, () -> cityManager.retrieveCompleteCity("111"));
+        assertThrows(MalformedCityNameException.class, () -> cityManager.retrieveCompleteCity("asd123"));
+        assertThrows(MalformedCityNameException.class, () -> cityManager.retrieveCompleteCity("   "));
     }
 
     @Test
     void testRetrieveCompleteCity_FailedRequest() {
         // Don't need to prepare anything, since mocks return null by default
-        assertThrows(CityManagementException.class, () -> cityManager.retrieveCompleteCity("tallinn"));
+
+        assertThrows(CityDataImportException.class, () -> cityManager.retrieveCompleteCity("tallinn"));
+
         verify(logger, times(1)).warning(anyString());
     }
 
     @Test
-    void testRetrieveCompleteCity_MalformattedResponse() {
+    void testRetrieveCompleteCity_MalformedResponse() {
         // Don't mock the ObjectMapper for this test, otherwise it returns null values leading to throwing an exception
         cityManager = new CityManager(cityRepository, logger, restTemplate, new ObjectMapper());
 
         // For JSON formatting rule infringement (missing trailing bracket)
+
         when(restTemplate.getForObject(anyString(), eq(String.class))).thenReturn("""
                                                                                           [
                                                                                             {
@@ -206,10 +184,12 @@ class CityManagerTest {
                                                                                             }
                                                                                           """);
 
-        assertThrows(CityManagementException.class, () -> cityManager.retrieveCompleteCity("tallinn"));
+        assertThrows(CityDataImportException.class, () -> cityManager.retrieveCompleteCity("tallinn"));
+
         verify(logger, times(1)).warning(anyString());
 
         // For contextual format irregularity
+
         when(restTemplate.getForObject(anyString(), eq(String.class))).thenReturn("""
                                                                                           [
                                                                                             {
@@ -220,10 +200,12 @@ class CityManagerTest {
                                                                                           ]""");
 
 
-        assertThrows(CityManagementException.class, () -> cityManager.retrieveCompleteCity("tallinn"));
+        assertThrows(CityDataImportException.class, () -> cityManager.retrieveCompleteCity("tallinn"));
+
         verify(logger, times(2)).warning(anyString());
 
-        // For other format irregularity (response is not an array or is an empty one)
+        // For other format irregularity (response is not an array)
+
         when(restTemplate.getForObject(anyString(), eq(String.class))).thenReturn("""
                                                                                           {
                                                                                             "name": "Tallinn",
@@ -231,12 +213,19 @@ class CityManagerTest {
                                                                                             "lon": 24.7453688
                                                                                           }""");
 
-        assertThrows(CityManagementException.class, () -> cityManager.retrieveCompleteCity("tallinn"));
-        verify(logger, times(3)).warning(anyString());
+        assertThrows(CityDataImportException.class, () -> cityManager.retrieveCompleteCity("tallinn"));
 
+        verify(logger, times(3)).warning(anyString());
+    }
+
+    @Test
+    void testRetrieveCompleteCity_NotExistingCity() {
+        // Don't mock the ObjectMapper for this test, otherwise it returns null values leading to throwing an exception
+        cityManager = new CityManager(cityRepository, logger, restTemplate, new ObjectMapper());
         when(restTemplate.getForObject(anyString(), eq(String.class))).thenReturn("[]");
 
-        assertThrows(CityManagementException.class, () -> cityManager.retrieveCompleteCity("tallinn"));
-        verify(logger, times(3)).warning(anyString());
+        assertThrows(CityNotFoundException.class, () -> cityManager.retrieveCompleteCity("tallinn"));
+
+        verify(logger, times(0)).warning(anyString());
     }
 }

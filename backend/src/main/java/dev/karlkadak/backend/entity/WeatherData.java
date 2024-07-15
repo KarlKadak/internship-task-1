@@ -18,7 +18,7 @@ public class WeatherData {
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private long id;
 
     /**
      * The city for which the data is collected
@@ -32,9 +32,8 @@ public class WeatherData {
     /**
      * UNIX timestamp of the data calculation, UTC
      */
-    @NonNull
     @Column(nullable = false)
-    private Long timestamp;
+    private long timestamp;
 
     /**
      * Air temperature at time of data calculation, Celsius<br> Null in case of missing value

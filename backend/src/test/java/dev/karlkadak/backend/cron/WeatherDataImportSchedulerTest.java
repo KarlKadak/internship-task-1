@@ -37,7 +37,6 @@ class WeatherDataImportSchedulerTest {
     @Test
     void testScheduleImport() {
         weatherDataImportScheduler.setImporterCronExpression("*/5 * * * * *");
-
         ScheduledFuture<?> mockFuture = mock(ScheduledFuture.class);
         doReturn(mockFuture).when(taskScheduler).schedule(any(Runnable.class), any(CronTrigger.class));
 

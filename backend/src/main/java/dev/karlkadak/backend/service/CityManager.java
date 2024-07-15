@@ -1,12 +1,10 @@
 package dev.karlkadak.backend.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.karlkadak.backend.entity.City;
-import dev.karlkadak.backend.exception.CityManagementException;
+import dev.karlkadak.backend.exception.*;
 import dev.karlkadak.backend.repository.CityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,8 +17,8 @@ import java.util.Optional;
 import java.util.logging.Logger;
 
 /**
- * Used for managing the cities and their tracking in the database Also logs the management actions using
- * {@link java.util.logging.Logger}
+ * Used for managing the cities and their tracking in the database
+ * <br>Also logs the management actions using {@link java.util.logging.Logger}
  */
 @Service
 public class CityManager {
@@ -52,19 +50,15 @@ public class CityManager {
      *
      * @param name name of the city to add / toggle
      * @return generated / toggled {@link City} object
-     * @throws CityManagementException if a city with the given name does not exist or tracking for it is already
-     *                                 enabled
      */
-    public City enableImporting(String name)
-            throws CityManagementException {
+    public City enableImporting(String name) {
         // Retrieve the complete city object
         City city = retrieveCompleteCity(name);
 
         boolean cityIsPresent = cityRepository.exists(Example.of(city));
 
         // Throw exception if city is already being tracked
-        if (cityIsPresent && city.isImportingData())
-            throw new CityManagementException("City is already being tracked.");
+        if (cityIsPresent && city.isImportingData()) throw new CityAlreadyBeingTrackedException();
 
         // Enable data tracking if city is present and not being tracked
         if (cityIsPresent) city.setImportingData(true);
@@ -83,17 +77,15 @@ public class CityManager {
      *
      * @param id ID of the {@link City} object to disable
      * @return toggled {@link City} object
-     * @throws CityManagementException if the city with the given name is not saved
      */
-    public City disableImporting(long id)
-            throws CityManagementException {
+    public City disableImporting(long id) {
         // Retrieve the city object
         Optional<City> retrievedCityOptional = cityRepository.findById(id);
-        if (retrievedCityOptional.isEmpty()) throw new CityManagementException("City does not exist.");
+        if (retrievedCityOptional.isEmpty()) throw new CityNotFoundException(id);
         City city = retrievedCityOptional.get();
 
         // Throw exception if tracking for city is already disabled
-        if (!city.isImportingData()) throw new CityManagementException("City is already not being tracked.");
+        if (!city.isImportingData()) throw new CityAlreadyNotBeingTrackedException();
 
         // Toggle the tracking
         city.setImportingData(false);
@@ -103,6 +95,8 @@ public class CityManager {
 
         // Log the action
         logger.info(String.format("Disabled tracking for city \"%s\".", city.getName()));
+
+        return city;
     }
 
     /**
@@ -114,36 +108,33 @@ public class CityManager {
      * @param name city name to look up
      * @return a {@link City} object linked to the name of the city input, if city is present in database returns that
      * instance
-     * @throws CityManagementException in case of a processing error or when city with given name does not exist
      */
-    City retrieveCompleteCity(String name)
-            throws CityManagementException {
+    City retrieveCompleteCity(String name) {
         // Check the name for correct formatting
-        if (!nameFormattedCorrectly(name)) throw new CityManagementException("Malformatted city name.");
+        if (!nameFormattedCorrectly(name)) throw new MalformedCityNameException();
 
         // Initialize variables
-        JsonNode arrayNode = null;
+        JsonNode arrayNode;
         String completeName;
         double latitude;
         double longitude;
 
         // Perform the API request
         try {
-            String requestUrl = String.format("http://api.openweathermap.org/geo/1.0/direct?q=%s=&limit=1&appid=%s",
+            String requestUrl = String.format("https://api.openweathermap.org/geo/1.0/direct?q=%s=&limit=1&appid=%s",
                                               name, apiKey);
             String jsonResponse = restTemplate.getForObject(requestUrl, String.class);
             arrayNode = objectMapper.readTree(jsonResponse);
 
             // Throw exception in case of a processing error or an empty response
-            if (arrayNode == null || !arrayNode.isArray()) throw new JsonMappingException("");
-            if (arrayNode.isEmpty()) throw new Exception("City with given name does not exist.");
-        } catch (JsonProcessingException e) {
-            logger.warning(String.format("API response processing error when retrieving data for city \"%s\".", name));
-            throw new CityManagementException("API response processing error.");
+            if (arrayNode == null || !arrayNode.isArray()) throw new Exception();
         } catch (Exception e) {
-            throw new CityManagementException(e.getMessage());
+            logger.warning(String.format("API response processing error when retrieving data for city \"%s\".", name));
+            throw new CityDataImportException();
         }
 
+        // Throw exception if city is not present
+        if (arrayNode.isEmpty()) throw new CityNotFoundException();
 
         // Process the API response
         try {
@@ -161,15 +152,15 @@ public class CityManager {
             return new City(completeName, latitude, longitude);
         } catch (Exception e) {
             logger.warning(String.format("Error when processing retrieved city data for city \"%s\".", name));
-            throw new CityManagementException("Error when processing retrieved city data.");
+            throw new CityDataImportException();
         }
     }
 
     /**
-     * Used for preliminary checking of a city name's validity<br> Refuses malformatted names
+     * Used for preliminary checking of a city name's validity<br> Refuses malformed names
      *
      * @param name complete name of the city to check
-     * @return true for acceptable, false for malformatted city name
+     * @return true for acceptable, false for malformed city name
      */
     private boolean nameFormattedCorrectly(String name) {
         return (!name.isBlank() && name.chars().noneMatch(Character::isDigit));

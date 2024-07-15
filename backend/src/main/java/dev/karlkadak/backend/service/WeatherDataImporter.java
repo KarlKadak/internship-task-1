@@ -1,10 +1,11 @@
 package dev.karlkadak.backend.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.karlkadak.backend.entity.City;
 import dev.karlkadak.backend.entity.WeatherData;
-import dev.karlkadak.backend.exception.WeatherDataFetchException;
+import dev.karlkadak.backend.exception.FailedWeatherDataFetchException;
 import dev.karlkadak.backend.repository.CityRepository;
 import dev.karlkadak.backend.repository.WeatherDataRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,7 +63,7 @@ public class WeatherDataImporter {
             try {
                 fetchAndSave(city);
                 fetchedCityCount++;
-            } catch (WeatherDataFetchException e) {
+            } catch (FailedWeatherDataFetchException e) {
                 logger.warning(String.format("Failed fetching weather data for city \"%s\". Reason: %s", city.getName(),
                                              e.getMessage()));
             }
@@ -78,17 +79,15 @@ public class WeatherDataImporter {
      * database
      *
      * @param city {@link dev.karlkadak.backend.entity.City City} to fetch weather data about
-     * @throws WeatherDataFetchException in case of an error
      */
-    private void fetchAndSave(City city)
-            throws WeatherDataFetchException {
+    private void fetchAndSave(City city) {
         WeatherData fetchedData;
 
         // Attempt requesting the weather data, throw a
         try {
             fetchedData = requestData(city);
         } catch (Exception e) {
-            throw new WeatherDataFetchException(e.getMessage());
+            throw new FailedWeatherDataFetchException(e.getMessage());
         }
 
         // Save the fetched data to the database
@@ -101,10 +100,9 @@ public class WeatherDataImporter {
      * @param city {@link dev.karlkadak.backend.entity.City City} to fetch weather data about
      * @return {@link dev.karlkadak.backend.entity.WeatherData} about the specified
      * {@link dev.karlkadak.backend.entity.City City}
-     * @throws Exception in case of a JSON parse error or when a required value is missing from the parsed JSON
      */
     private WeatherData requestData(City city)
-            throws Exception {
+            throws JsonProcessingException {
         // Initialize datapoint variables
         final long timestamp;
         Double airTemperature = null;
