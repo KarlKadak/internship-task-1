@@ -75,12 +75,12 @@ public class WeatherDataImporter {
 
     /**
      * Fetches the weather data of the specified {@link dev.karlkadak.backend.entity.City City} and saves it to the
-     * database<br> Needs to be package-private in order to test
+     * database
      *
      * @param city {@link dev.karlkadak.backend.entity.City City} to fetch weather data about
      * @throws WeatherDataFetchException in case of an error
      */
-    void fetchAndSave(City city)
+    private void fetchAndSave(City city)
             throws WeatherDataFetchException {
         WeatherData fetchedData;
 

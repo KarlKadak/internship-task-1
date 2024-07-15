@@ -76,7 +76,7 @@ class WeatherDataImporterTest {
     }
 
     @Test
-    void testDefaultImport_WithCitiesToFetch() {
+    void testDefaultImport_WithCitiesToFetch_WithAllData() {
         // Don't mock the ObjectMapper for this test, otherwise it returns null values leading to throwing an exception
         weatherDataImporter = new WeatherDataImporter(weatherDataRepository, cityRepository, logger, restTemplate,
                                                       new ObjectMapper());
@@ -101,6 +101,27 @@ class WeatherDataImporterTest {
 
         weatherDataImporter.defaultImport();
 
+        verify(logger, times(cities.size() + 2)).info(anyString());
+        verify(cityRepository, times(1)).findAllByImportingDataTrue();
+        verify(weatherDataRepository, times(2)).save(any(WeatherData.class));
+    }
+
+    @Test
+    void testDefaultImport_WithCitiesToFetch_WithRequiredData() {
+        // Don't mock the ObjectMapper for this test, otherwise it returns null values leading to throwing an exception
+        weatherDataImporter = new WeatherDataImporter(weatherDataRepository, cityRepository, logger, restTemplate,
+                                                      new ObjectMapper());
+
+        City city1 = new City("City1", 10.08, 15.0015);
+        City city2 = new City("City2", -70.02, -25.00005);
+        List<City> cities = Arrays.asList(city1, city2);
+        when(cityRepository.findAllByImportingDataTrue()).thenReturn(cities);
+
+        when(restTemplate.getForObject(anyString(), eq(String.class))).thenReturn("{ \"dt\": 1661870592 } ");
+
+        weatherDataImporter.defaultImport();
+
+        verify(logger, times(cities.size() + 2)).info(anyString());
         verify(cityRepository, times(1)).findAllByImportingDataTrue();
         verify(weatherDataRepository, times(2)).save(any(WeatherData.class));
     }
