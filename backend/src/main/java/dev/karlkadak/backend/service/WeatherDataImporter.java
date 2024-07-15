@@ -108,6 +108,7 @@ public class WeatherDataImporter {
         Double airTemperature = null;
         Double windSpeed = null;
         Integer humidity = null;
+        String iconCode = null;
 
         // Variables needed for performing the API request
         Double latitude = city.getCoordinatePair().getLatitude();
@@ -122,18 +123,26 @@ public class WeatherDataImporter {
         responseMap = objectMapper.readValue(jsonResponse, new TypeReference<>() {
         });
         timestamp = ((Integer) responseMap.get("dt")).longValue();
-        Object mainDataObject = responseMap.get("main");
-        if (mainDataObject instanceof Map) {
-            Map<String, Object> mainData = (Map<String, Object>) mainDataObject;
+        try {
+            List<Map<String, Object>> weatherList = (List<Map<String, Object>>) responseMap.get("weather");
+            Map<String, Object> weatherObject = weatherList.get(0);
+            iconCode = (String) weatherObject.get("icon");
+        } catch (Exception _) {
+        }
+        try {
+            Map<String, Object> mainObject = (Map<String, Object>) responseMap.get("main");
+            Map<String, Object> mainData = (Map<String, Object>) mainObject;
             airTemperature = (Double) mainData.get("temp");
             humidity = (Integer) mainData.get("humidity");
+        } catch (Exception _) {
         }
-        Object windDataObject = responseMap.get("wind");
-        if (windDataObject instanceof Map) {
-            Map<String, Object> windData = (Map<String, Object>) windDataObject;
+        try {
+            Map<String, Object> windObject = (Map<String, Object>) responseMap.get("wind");
+            Map<String, Object> windData = (Map<String, Object>) windObject;
             windSpeed = (Double) windData.get("speed");
+        } catch (Exception _) {
         }
 
-        return new WeatherData(city, timestamp, airTemperature, windSpeed, humidity);
+        return new WeatherData(city, timestamp, airTemperature, windSpeed, humidity, iconCode);
     }
 }

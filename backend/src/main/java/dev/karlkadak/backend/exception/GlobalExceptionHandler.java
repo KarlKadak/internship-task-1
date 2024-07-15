@@ -37,4 +37,9 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleMalformedCityNameException(MalformedCityNameException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(ex.getMessage()));
     }
+
+    @ExceptionHandler(WeatherDataMissingException.class)
+    public ResponseEntity<ErrorResponse> handleWeatherDataMissingException(WeatherDataMissingException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse(ex.getMessage()));
+    }
 }

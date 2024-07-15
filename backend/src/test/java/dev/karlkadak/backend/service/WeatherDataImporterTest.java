@@ -82,6 +82,11 @@ class WeatherDataImporterTest {
         List<City> cities = Arrays.asList(city1, city2);
         String response = """
                 {
+                  "weather": [
+                    {
+                      "icon": "01d"
+                    }
+                  ],
                   "main": {
                     "temp": 29.48,
                     "humidity": 64

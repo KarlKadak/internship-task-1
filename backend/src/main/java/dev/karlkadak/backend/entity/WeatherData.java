@@ -33,6 +33,7 @@ public class WeatherData {
      * UNIX timestamp of the data calculation, UTC
      */
     @Column(nullable = false)
+    @Getter
     private long timestamp;
 
     /**
@@ -53,6 +54,9 @@ public class WeatherData {
     @Getter
     private Integer humidity;
 
+    @Getter
+    private String iconCode;
+
     /**
      * Default constructor
      *
@@ -62,12 +66,13 @@ public class WeatherData {
      * @param windSpeed      Wind speed at time of data calculation, meter/sec<br> Null in case of missing value
      * @param humidity       Humidity at time of data calculation, %<br> Null in case of missing value
      */
-    public WeatherData(@NonNull City city, @NonNull Long timestamp, Double airTemperature, Double windSpeed,
-                       Integer humidity) {
+    public WeatherData(@NonNull City city, long timestamp, Double airTemperature, Double windSpeed,
+                       Integer humidity, String iconCode) {
         this.city = city;
         this.timestamp = timestamp;
         this.airTemperature = airTemperature;
         this.windSpeed = windSpeed;
         this.humidity = humidity;
+        this.iconCode = iconCode;
     }
 }

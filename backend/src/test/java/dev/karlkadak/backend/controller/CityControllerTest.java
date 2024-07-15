@@ -3,8 +3,10 @@ package dev.karlkadak.backend.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.karlkadak.backend.dto.AddCityRequest;
 import dev.karlkadak.backend.entity.City;
+import dev.karlkadak.backend.entity.WeatherData;
 import dev.karlkadak.backend.exception.*;
 import dev.karlkadak.backend.repository.CityRepository;
+import dev.karlkadak.backend.repository.WeatherDataRepository;
 import dev.karlkadak.backend.service.CityManager;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +37,9 @@ class CityControllerTest {
 
     @MockBean
     private CityRepository cityRepository;
+
+    @MockBean
+    private WeatherDataRepository weatherDataRepository;
 
     @MockBean
     private CityManager cityManager;
@@ -152,6 +157,34 @@ class CityControllerTest {
         doThrow(CityNotFoundException.class).when(cityManager).disableImporting(anyLong());
 
         mockMvc.perform(delete(apiPrefix + "/cities/{id}", cityId).accept(MediaType.APPLICATION_JSON)).andExpect(
+                status().isNotFound());
+    }
+
+    @Test
+    void testWeather_Success()
+            throws Exception {
+        Long cityId = 1L;
+        City city = new City("Tallinn", 59.4372155, 24.7453688);
+        WeatherData weatherData = new WeatherData(city, 10000L, 10D, 5D, 60, "01d");
+        doReturn(Optional.of(city)).when(cityRepository).findById(any());
+        doReturn(Optional.of(weatherData)).when(weatherDataRepository).findTopByCity_IdOrderByTimestampDesc(anyLong());
+
+        mockMvc.perform(get(apiPrefix + "/cities/{id}/weather", cityId).accept(MediaType.APPLICATION_JSON)).andExpect(
+                status().isOk());
+    }
+
+    @Test
+    void testWeather_Failure()
+            throws Exception {
+        Long cityId = 1L;
+        City city = new City("Tallinn", 59.4372155, 24.7453688);
+
+        mockMvc.perform(get(apiPrefix + "/cities/{id}/weather", cityId).accept(MediaType.APPLICATION_JSON)).andExpect(
+                status().isNotFound());
+
+        doReturn(Optional.of(city)).when(cityRepository).findById(any());
+
+        mockMvc.perform(get(apiPrefix + "/cities/{id}/weather", cityId).accept(MediaType.APPLICATION_JSON)).andExpect(
                 status().isNotFound());
     }
 }
