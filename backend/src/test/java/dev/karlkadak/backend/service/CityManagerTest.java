@@ -163,7 +163,7 @@ class CityManagerTest {
     void testRetrieveCompleteCity_FailedRequest() {
         // Don't need to prepare anything, since mocks return null by default
 
-        assertThrows(CityDataImportException.class, () -> cityManager.retrieveCompleteCity("tallinn"));
+        assertThrows(FailedCityDataImportException.class, () -> cityManager.retrieveCompleteCity("tallinn"));
 
         verify(logger, times(1)).warning(anyString());
     }
@@ -184,7 +184,7 @@ class CityManagerTest {
                                                                                             }
                                                                                           """);
 
-        assertThrows(CityDataImportException.class, () -> cityManager.retrieveCompleteCity("tallinn"));
+        assertThrows(FailedCityDataImportException.class, () -> cityManager.retrieveCompleteCity("tallinn"));
 
         verify(logger, times(1)).warning(anyString());
 
@@ -200,7 +200,7 @@ class CityManagerTest {
                                                                                           ]""");
 
 
-        assertThrows(CityDataImportException.class, () -> cityManager.retrieveCompleteCity("tallinn"));
+        assertThrows(FailedCityDataImportException.class, () -> cityManager.retrieveCompleteCity("tallinn"));
 
         verify(logger, times(2)).warning(anyString());
 
@@ -213,7 +213,7 @@ class CityManagerTest {
                                                                                             "lon": 24.7453688
                                                                                           }""");
 
-        assertThrows(CityDataImportException.class, () -> cityManager.retrieveCompleteCity("tallinn"));
+        assertThrows(FailedCityDataImportException.class, () -> cityManager.retrieveCompleteCity("tallinn"));
 
         verify(logger, times(3)).warning(anyString());
     }
@@ -222,6 +222,7 @@ class CityManagerTest {
     void testRetrieveCompleteCity_NotExistingCity() {
         // Don't mock the ObjectMapper for this test, otherwise it returns null values leading to throwing an exception
         cityManager = new CityManager(cityRepository, logger, restTemplate, new ObjectMapper());
+
         when(restTemplate.getForObject(anyString(), eq(String.class))).thenReturn("[]");
 
         assertThrows(CityNotFoundException.class, () -> cityManager.retrieveCompleteCity("tallinn"));

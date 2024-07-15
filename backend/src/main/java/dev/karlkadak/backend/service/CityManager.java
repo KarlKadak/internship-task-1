@@ -130,7 +130,7 @@ public class CityManager {
             if (arrayNode == null || !arrayNode.isArray()) throw new Exception();
         } catch (Exception e) {
             logger.warning(String.format("API response processing error when retrieving data for city \"%s\".", name));
-            throw new CityDataImportException();
+            throw new FailedCityDataImportException();
         }
 
         // Throw exception if city is not present
@@ -152,7 +152,7 @@ public class CityManager {
             return new City(completeName, latitude, longitude);
         } catch (Exception e) {
             logger.warning(String.format("Error when processing retrieved city data for city \"%s\".", name));
-            throw new CityDataImportException();
+            throw new FailedCityDataImportException();
         }
     }
 
