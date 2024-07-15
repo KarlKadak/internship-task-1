@@ -51,10 +51,11 @@ public class CityManager {
      * already exists
      *
      * @param name name of the city to add / toggle
+     * @return generated / toggled {@link City} object
      * @throws CityManagementException if a city with the given name does not exist or tracking for it is already
      *                                 enabled
      */
-    public void enableImporting(String name)
+    public City enableImporting(String name)
             throws CityManagementException {
         // Retrieve the complete city object
         City city = retrieveCompleteCity(name);
@@ -73,15 +74,18 @@ public class CityManager {
 
         // Log the action
         logger.info(String.format("Enabled tracking for city \"%s\".", city.getName()));
+
+        return city;
     }
 
     /**
      * Disables the weather data tracking for {@link City} object with given ID
      *
      * @param id ID of the {@link City} object to disable
+     * @return toggled {@link City} object
      * @throws CityManagementException if the city with the given name is not saved
      */
-    public void disableImporting(long id)
+    public City disableImporting(long id)
             throws CityManagementException {
         // Retrieve the city object
         Optional<City> retrievedCityOptional = cityRepository.findById(id);
