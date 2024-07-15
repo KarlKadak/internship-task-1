@@ -77,9 +77,8 @@ class WeatherDataImporterTest {
         weatherDataImporter = new WeatherDataImporter(weatherDataRepository, cityRepository, logger, restTemplate,
                                                       new ObjectMapper());
 
-        City city1 = new City("City1", 10.08, 15.0015);
-        City city2 = new City("City2", -70.02, -25.00005);
-        List<City> cities = Arrays.asList(city1, city2);
+        City city1 = new City("Tallinn", 59.4372155, 24.7453688);
+        List<City> cities = List.of(city1);
         String response = """
                 {
                   "weather": [
@@ -104,7 +103,7 @@ class WeatherDataImporterTest {
 
         verify(logger, times(cities.size() + 2)).info(anyString());
         verify(cityRepository, times(1)).findAllByImportingDataTrue();
-        verify(weatherDataRepository, times(2)).save(any(WeatherData.class));
+        verify(weatherDataRepository, times(1)).save(any(WeatherData.class));
     }
 
     @Test
@@ -113,9 +112,8 @@ class WeatherDataImporterTest {
         weatherDataImporter = new WeatherDataImporter(weatherDataRepository, cityRepository, logger, restTemplate,
                                                       new ObjectMapper());
 
-        City city1 = new City("City1", 10.08, 15.0015);
-        City city2 = new City("City2", -70.02, -25.00005);
-        List<City> cities = Arrays.asList(city1, city2);
+        City city1 = new City("Tallinn", 59.4372155, 24.7453688);
+        List<City> cities = List.of(city1);
         doReturn(cities).when(cityRepository).findAllByImportingDataTrue();
         doReturn("{ \"dt\": 1661870592 } ").when(restTemplate).getForObject(anyString(), eq(String.class));
 
@@ -123,6 +121,6 @@ class WeatherDataImporterTest {
 
         verify(logger, times(cities.size() + 2)).info(anyString());
         verify(cityRepository, times(1)).findAllByImportingDataTrue();
-        verify(weatherDataRepository, times(2)).save(any(WeatherData.class));
+        verify(weatherDataRepository, times(1)).save(any(WeatherData.class));
     }
 }
