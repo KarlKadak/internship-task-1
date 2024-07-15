@@ -33,13 +33,16 @@ class CityManagerTest {
     @Mock
     private ObjectMapper objectMapper;
 
+    @Mock
+    private WeatherDataImporter weatherDataImporter;
+
     @InjectMocks
     private CityManager cityManager;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        cityManager = new CityManager(cityRepository, logger, restTemplate, objectMapper);
+        cityManager = new CityManager(cityRepository, logger, restTemplate, objectMapper, weatherDataImporter);
 
         // Sample data to be returned from the geocoding API
         when(restTemplate.getForObject(anyString(), eq(String.class))).thenReturn("""
@@ -61,6 +64,7 @@ class CityManagerTest {
         spyManager.enableImporting("tallinn");
 
         verify(cityRepository, times(1)).save(newCity);
+        verify(weatherDataImporter, times(1)).fetchAndSave(newCity);
         verify(logger, times(1)).info(anyString());
     }
 
@@ -75,6 +79,7 @@ class CityManagerTest {
         spyManager.enableImporting("tallinn");
 
         verify(cityRepository, times(1)).save(newCity);
+        verify(weatherDataImporter, times(1)).fetchAndSave(newCity);
         verify(logger, times(1)).info(anyString());
     }
 
@@ -88,6 +93,7 @@ class CityManagerTest {
         assertThrows(CityAlreadyBeingTrackedException.class, () -> spyManager.enableImporting("tallinn"));
 
         verify(cityRepository, times(0)).save(newCity);
+        verify(weatherDataImporter, times(0)).fetchAndSave(newCity);
         verify(logger, times(0)).info(anyString());
     }
 
@@ -125,7 +131,7 @@ class CityManagerTest {
     @Test
     void testRetrieveCompleteCity_NewCity() {
         // Don't mock the ObjectMapper for this test, otherwise it returns null values leading to throwing an exception
-        cityManager = new CityManager(cityRepository, logger, restTemplate, new ObjectMapper());
+        cityManager = new CityManager(cityRepository, logger, restTemplate, new ObjectMapper(), weatherDataImporter);
 
         City returnedCity;
         when(cityRepository.findByName(anyString())).thenReturn(Optional.empty());
@@ -140,7 +146,7 @@ class CityManagerTest {
     @Test
     void testRetrieveCompleteCity_ExistingCity() {
         // Don't mock the ObjectMapper for this test, otherwise it returns null values leading to throwing an exception
-        cityManager = new CityManager(cityRepository, logger, restTemplate, new ObjectMapper());
+        cityManager = new CityManager(cityRepository, logger, restTemplate, new ObjectMapper(), weatherDataImporter);
 
         City existingCity = new City("Tallinn", 59.4372155, 24.7453688);
         City returnedCity;
@@ -171,7 +177,7 @@ class CityManagerTest {
     @Test
     void testRetrieveCompleteCity_MalformedResponse() {
         // Don't mock the ObjectMapper for this test, otherwise it returns null values leading to throwing an exception
-        cityManager = new CityManager(cityRepository, logger, restTemplate, new ObjectMapper());
+        cityManager = new CityManager(cityRepository, logger, restTemplate, new ObjectMapper(), weatherDataImporter);
 
         // For JSON formatting rule infringement (missing trailing bracket)
 
@@ -221,7 +227,7 @@ class CityManagerTest {
     @Test
     void testRetrieveCompleteCity_NotExistingCity() {
         // Don't mock the ObjectMapper for this test, otherwise it returns null values leading to throwing an exception
-        cityManager = new CityManager(cityRepository, logger, restTemplate, new ObjectMapper());
+        cityManager = new CityManager(cityRepository, logger, restTemplate, new ObjectMapper(), weatherDataImporter);
 
         when(restTemplate.getForObject(anyString(), eq(String.class))).thenReturn("[]");
 

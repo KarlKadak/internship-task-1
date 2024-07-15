@@ -68,9 +68,10 @@ public class WeatherData {
      * @param airTemperature Air temperature at time of data calculation, Celsius<br> Null in case of missing value
      * @param windSpeed      Wind speed at time of data calculation, meter/sec<br> Null in case of missing value
      * @param humidity       Humidity at time of data calculation, %<br> Null in case of missing value
+     * @param iconCode       icon code of the weather condition
      */
-    public WeatherData(@NonNull City city, long timestamp, Double airTemperature, Double windSpeed,
-                       Integer humidity, String iconCode) {
+    public WeatherData(@NonNull City city, long timestamp, Double airTemperature, Double windSpeed, Integer humidity,
+                       String iconCode) {
         this.city = city;
         this.timestamp = timestamp;
         this.airTemperature = airTemperature;

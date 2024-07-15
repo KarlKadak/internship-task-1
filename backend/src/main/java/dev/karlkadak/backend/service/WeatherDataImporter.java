@@ -80,7 +80,7 @@ public class WeatherDataImporter {
      *
      * @param city {@link dev.karlkadak.backend.entity.City City} to fetch weather data about
      */
-    private void fetchAndSave(City city) {
+    protected void fetchAndSave(City city) {
         WeatherData fetchedData;
 
         // Attempt requesting the weather data, throw a
@@ -100,6 +100,7 @@ public class WeatherDataImporter {
      * @param city {@link dev.karlkadak.backend.entity.City City} to fetch weather data about
      * @return {@link dev.karlkadak.backend.entity.WeatherData} about the specified
      * {@link dev.karlkadak.backend.entity.City City}
+     * @throws JsonProcessingException in case of API response processing error
      */
     private WeatherData requestData(City city)
             throws JsonProcessingException {

@@ -27,6 +27,7 @@ public class CityManager {
     private final Logger logger;
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
+    private final WeatherDataImporter weatherDataImporter;
 
     /**
      * API key gathered from application.properties which is used for accessing the
@@ -37,11 +38,12 @@ public class CityManager {
 
     @Autowired
     public CityManager(CityRepository cityRepository, Logger logger, RestTemplate restTemplate,
-                       ObjectMapper objectMapper) {
+                       ObjectMapper objectMapper, WeatherDataImporter weatherDataImporter) {
         this.cityRepository = cityRepository;
         this.logger = logger;
         this.restTemplate = restTemplate;
         this.objectMapper = objectMapper;
+        this.weatherDataImporter = weatherDataImporter;
     }
 
     /**
@@ -64,7 +66,9 @@ public class CityManager {
         if (cityIsPresent) city.setImportingData(true);
 
         // Save the city to database (adds it if not present / edits the current instance if present)
+        // Also gets current weather data
         cityRepository.save(city);
+        weatherDataImporter.fetchAndSave(city);
 
         // Log the action
         logger.info(String.format("Enabled tracking for city \"%s\".", city.getName()));
