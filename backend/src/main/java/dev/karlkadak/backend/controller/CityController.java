@@ -1,6 +1,7 @@
 package dev.karlkadak.backend.controller;
 
 import dev.karlkadak.backend.dto.AddCityRequest;
+import dev.karlkadak.backend.dto.WeatherResponse;
 import dev.karlkadak.backend.entity.City;
 import dev.karlkadak.backend.entity.WeatherData;
 import dev.karlkadak.backend.exception.CityNotFoundException;
@@ -93,14 +94,14 @@ public class CityController {
      * API endpoint for requesting the most recent weather data linked to a {@link City} object
      *
      * @param id the {@link City} object's {@link City#id id}
-     * @return the latest recorded {@link WeatherData} object
+     * @return the DTO of latest recorded {@link WeatherData} object
      */
     @GetMapping("/{id}/weather")
-    ResponseEntity<WeatherData> weather(@PathVariable Long id) {
+    ResponseEntity<WeatherResponse> weather(@PathVariable Long id) {
         City city = cityRepository.findById(id).orElse(null);
         if (city == null) throw new CityNotFoundException(id);
         Optional<WeatherData> weatherDataOptional = weatherDataRepository.findTopByCity_IdOrderByTimestampDesc(id);
         if (weatherDataOptional.isEmpty()) throw new WeatherDataMissingException();
-        return ResponseEntity.ok(weatherDataOptional.get());
+        return ResponseEntity.ok(new WeatherResponse(weatherDataOptional.get()));
     }
 }

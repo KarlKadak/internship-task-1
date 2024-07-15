@@ -54,6 +54,9 @@ public class WeatherData {
     @Getter
     private Integer humidity;
 
+    /**
+     * Weather state icon code at time of data calculation
+     */
     @Getter
     private String iconCode;
 

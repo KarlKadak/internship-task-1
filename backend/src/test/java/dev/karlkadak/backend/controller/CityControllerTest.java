@@ -171,6 +171,12 @@ class CityControllerTest {
 
         mockMvc.perform(get(apiPrefix + "/cities/{id}/weather", cityId).accept(MediaType.APPLICATION_JSON)).andExpect(
                 status().isOk());
+
+        weatherData = new WeatherData(city, 10000L, null, null, null, null);
+        doReturn(Optional.of(weatherData)).when(weatherDataRepository).findTopByCity_IdOrderByTimestampDesc(anyLong());
+
+        mockMvc.perform(get(apiPrefix + "/cities/{id}/weather", cityId).accept(MediaType.APPLICATION_JSON)).andExpect(
+                status().isOk());
     }
 
     @Test
