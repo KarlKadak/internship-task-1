@@ -57,7 +57,7 @@ class CityManagerTest {
 
     @Test
     void testEnableImporting_NewCity() {
-        City newCity = new City("Tallinn", 59.4372155, 24.7453688);
+        City newCity = new City("Tallinn", 59.4372155, 24.7453688, "EE");
         CityManager spyManager = spy(cityManager);
         doReturn(newCity).when(spyManager).retrieveCompleteCity(anyString());
 
@@ -70,7 +70,7 @@ class CityManagerTest {
 
     @Test
     void testEnableImporting_ExistingNotTrackedCity() {
-        City newCity = new City("Tallinn", 59.4372155, 24.7453688);
+        City newCity = new City("Tallinn", 59.4372155, 24.7453688, "EE");
         newCity.setImportingData(false);
         CityManager spyManager = spy(cityManager);
         doReturn(newCity).when(spyManager).retrieveCompleteCity(anyString());
@@ -85,7 +85,7 @@ class CityManagerTest {
 
     @Test
     void testEnableImporting_ExistingTrackedCity() {
-        City newCity = new City("Tallinn", 59.4372155, 24.7453688);
+        City newCity = new City("Tallinn", 59.4372155, 24.7453688, "EE");
         CityManager spyManager = spy(cityManager);
         doReturn(newCity).when(spyManager).retrieveCompleteCity(anyString());
         doReturn(true).when(cityRepository).exists(Example.of(newCity));
@@ -99,7 +99,7 @@ class CityManagerTest {
 
     @Test
     void testDisableImporting_ExistingTrackedCity() {
-        City newCity = new City("Tallinn", 59.4372155, 24.7453688);
+        City newCity = new City("Tallinn", 59.4372155, 24.7453688, "EE");
         doReturn(Optional.of(newCity)).when(cityRepository).findById(any());
 
         cityManager.disableImporting(1);
@@ -111,7 +111,7 @@ class CityManagerTest {
 
     @Test
     void testDisableImporting_ExistingNotTrackedCity() {
-        City newCity = new City("Tallinn", 59.4372155, 24.7453688);
+        City newCity = new City("Tallinn", 59.4372155, 24.7453688, "EE");
         newCity.setImportingData(false);
         doReturn(Optional.of(newCity)).when(cityRepository).findById(any());
 
@@ -148,7 +148,7 @@ class CityManagerTest {
         // Don't mock the ObjectMapper for this test, otherwise it returns null values leading to throwing an exception
         cityManager = new CityManager(cityRepository, logger, restTemplate, new ObjectMapper(), weatherDataImporter);
 
-        City existingCity = new City("Tallinn", 59.4372155, 24.7453688);
+        City existingCity = new City("Tallinn", 59.4372155, 24.7453688, "EE");
         City returnedCity;
         when(cityRepository.findByName(anyString())).thenReturn(Optional.of(existingCity));
 

@@ -64,8 +64,10 @@ class CityControllerTest {
     void testAll_WithCities()
             throws Exception {
         List<City> cities = new ArrayList<>();
-        cities.add(new City("Tallinn", 59.4372155, 24.7453688));
-        doReturn(cities).when(cityRepository).findAll();
+        cities.add(new City("Tallinn", 59.4372155, 24.7453688, "EE"));
+        cities.add(new City("Tallinn", 59.4372155, 24.7453688, null));
+        cities.add(new City("Tallinn", 59.4372155, 24.7453688, ""));
+        doReturn(cities).when(cityRepository).findAllByImportingDataTrue();
 
         mockMvc.perform(get(apiPrefix + "/cities").accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
     }
@@ -73,7 +75,7 @@ class CityControllerTest {
     @Test
     void testEnable_Success()
             throws Exception {
-        City city = new City("Tallinn", 59.4372155, 24.7453688);
+        City city = new City("Tallinn", 59.4372155, 24.7453688, "EE");
         doReturn(city).when(cityManager).enableImporting(anyString());
         AddCityRequest request = new AddCityRequest();
         request.setName("tallinn");
@@ -117,7 +119,7 @@ class CityControllerTest {
     void testOne_Success()
             throws Exception {
         Long cityId = 1L;
-        City city = new City("Tallinn", 59.4372155, 24.7453688);
+        City city = new City("Tallinn", 59.4372155, 24.7453688, "EE");
         doReturn(Optional.of(city)).when(cityRepository).findById(any());
 
         mockMvc.perform(get(apiPrefix + "/cities/{id}", cityId).accept(MediaType.APPLICATION_JSON)).andExpect(
@@ -138,7 +140,7 @@ class CityControllerTest {
     void testDisable_Success()
             throws Exception {
         Long cityId = 1L;
-        City city = new City("Tallinn", 59.4372155, 24.7453688);
+        City city = new City("Tallinn", 59.4372155, 24.7453688, "EE");
         doReturn(city).when(cityManager).disableImporting(anyLong());
 
         mockMvc.perform(delete(apiPrefix + "/cities/{id}", cityId).accept(MediaType.APPLICATION_JSON)).andExpect(
@@ -164,7 +166,7 @@ class CityControllerTest {
     void testWeather_Success()
             throws Exception {
         Long cityId = 1L;
-        City city = new City("Tallinn", 59.4372155, 24.7453688);
+        City city = new City("Tallinn", 59.4372155, 24.7453688, "EE");
         WeatherData weatherData = new WeatherData(city, 10000L, 10D, 5D, 60, "01d");
         doReturn(Optional.of(city)).when(cityRepository).findById(any());
         doReturn(Optional.of(weatherData)).when(weatherDataRepository).findTopByCity_IdOrderByTimestampDesc(anyLong());
@@ -177,13 +179,19 @@ class CityControllerTest {
 
         mockMvc.perform(get(apiPrefix + "/cities/{id}/weather", cityId).accept(MediaType.APPLICATION_JSON)).andExpect(
                 status().isOk());
+
+        weatherData = new WeatherData(city, 10000L, null, null, null, "");
+        doReturn(Optional.of(weatherData)).when(weatherDataRepository).findTopByCity_IdOrderByTimestampDesc(anyLong());
+
+        mockMvc.perform(get(apiPrefix + "/cities/{id}/weather", cityId).accept(MediaType.APPLICATION_JSON)).andExpect(
+                status().isOk());
     }
 
     @Test
     void testWeather_Failure()
             throws Exception {
         Long cityId = 1L;
-        City city = new City("Tallinn", 59.4372155, 24.7453688);
+        City city = new City("Tallinn", 59.4372155, 24.7453688, "EE");
 
         mockMvc.perform(get(apiPrefix + "/cities/{id}/weather", cityId).accept(MediaType.APPLICATION_JSON)).andExpect(
                 status().isNotFound());

@@ -60,7 +60,7 @@ class WeatherDataImporterTest {
     @Test
     void testDefaultImport_LogsError()
             throws JsonProcessingException {
-        List<City> cities = List.of(new City("City1", 1.0, 1.0));
+        List<City> cities = List.of(new City("City1", 1.0, 1.0, "EE"));
         Map<String, Object> responseMap = new HashMap<>();
         doReturn(cities).when(cityRepository).findAllByImportingDataTrue();
         doReturn(responseMap).when(objectMapper).readValue(anyString(), any(TypeReference.class));
@@ -77,7 +77,7 @@ class WeatherDataImporterTest {
         weatherDataImporter = new WeatherDataImporter(weatherDataRepository, cityRepository, logger, restTemplate,
                                                       new ObjectMapper());
 
-        City city1 = new City("Tallinn", 59.4372155, 24.7453688);
+        City city1 = new City("Tallinn", 59.4372155, 24.7453688, "EE");
         List<City> cities = List.of(city1);
         String response = """
                 {
@@ -112,7 +112,7 @@ class WeatherDataImporterTest {
         weatherDataImporter = new WeatherDataImporter(weatherDataRepository, cityRepository, logger, restTemplate,
                                                       new ObjectMapper());
 
-        City city1 = new City("Tallinn", 59.4372155, 24.7453688);
+        City city1 = new City("Tallinn", 59.4372155, 24.7453688, "EE");
         List<City> cities = List.of(city1);
         doReturn(cities).when(cityRepository).findAllByImportingDataTrue();
         doReturn("{ \"dt\": 1661870592 } ").when(restTemplate).getForObject(anyString(), eq(String.class));

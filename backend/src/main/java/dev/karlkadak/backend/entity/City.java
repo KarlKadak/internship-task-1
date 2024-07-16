@@ -6,6 +6,7 @@ import lombok.*;
 /**
  * Class representing a single city for weather data collection
  */
+@Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED) // Required for JPA
 public class City {
@@ -15,7 +16,6 @@ public class City {
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Getter
     private long id;
 
     /**
@@ -23,14 +23,12 @@ public class City {
      */
     @NonNull
     @Column(unique = true, nullable = false)
-    @Getter
     private String name;
 
     /**
      * Specifies if weather data collection for the city is enabled
      */
     @Column(nullable = false)
-    @Getter
     @Setter
     private boolean importingData;
 
@@ -39,8 +37,13 @@ public class City {
      */
     @NonNull
     @Embedded
-    @Getter
     private CoordinatePair coordinatePair;
+
+    /**
+     * Country code of the location, used for flag image generation
+     */
+    @Getter
+    private String countryCode;
 
     /**
      * Default constructor using coordinate values, sets {@link #importingData} field to
@@ -50,9 +53,10 @@ public class City {
      * @param latitude  Geographical latitude of the city
      * @param longitude Geographical longitude of the city
      */
-    public City(@NonNull String name, @NonNull Double latitude, @NonNull Double longitude) {
+    public City(@NonNull String name, @NonNull Double latitude, @NonNull Double longitude, String countryCode) {
         this.name = name;
         this.importingData = Boolean.TRUE;
         this.coordinatePair = new CoordinatePair(latitude, longitude);
+        this.countryCode = countryCode;
     }
 }

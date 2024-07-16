@@ -122,6 +122,7 @@ public class CityManager {
         String completeName;
         double latitude;
         double longitude;
+        String countryCode;
 
         // Perform the API request
         try {
@@ -153,7 +154,8 @@ public class CityManager {
             // Return a new city object
             latitude = (double) responseMap.get("lat");
             longitude = (double) responseMap.get("lon");
-            return new City(completeName, latitude, longitude);
+            countryCode = (String) responseMap.get("country");
+            return new City(completeName, latitude, longitude, countryCode);
         } catch (Exception e) {
             logger.warning(String.format("Error when processing retrieved city data for city \"%s\".", name));
             throw new FailedCityDataImportException();

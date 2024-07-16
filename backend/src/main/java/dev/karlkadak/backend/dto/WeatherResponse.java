@@ -19,14 +19,14 @@ public class WeatherResponse {
      * Default constructor, build the {@link WeatherResponse#iconHref} URL if given {@link WeatherData} object's
      * {@link WeatherData#iconCode iconCode} is not null
      *
-     * @param weatherData {@link WeatherData} object to build the object from
+     * @param weatherData {@link WeatherData} object to build the response object from
      */
     public WeatherResponse(WeatherData weatherData) {
         this.timestamp = weatherData.getTimestamp();
         this.airTemp = weatherData.getAirTemperature();
         this.windSpeed = weatherData.getWindSpeed();
         this.humidity = weatherData.getHumidity();
-        if (weatherData.getIconCode() == null) this.iconHref = null;
+        if (weatherData.getIconCode() == null || weatherData.getIconCode().isBlank()) this.iconHref = null;
         else this.iconHref = "https://openweathermap.org/img/wn/" + weatherData.getIconCode() + "@2x.png";
     }
 }

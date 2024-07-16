@@ -1,6 +1,7 @@
 package dev.karlkadak.backend.controller;
 
 import dev.karlkadak.backend.dto.AddCityRequest;
+import dev.karlkadak.backend.dto.CityResponse;
 import dev.karlkadak.backend.dto.WeatherResponse;
 import dev.karlkadak.backend.entity.City;
 import dev.karlkadak.backend.entity.WeatherData;
@@ -15,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,51 +33,57 @@ public class CityController {
 
     @Autowired
     public CityController(CityRepository cityRepository, CityManager cityManager,
-                          WeatherDataRepository weatherDataRepository, WeatherDataRepository weatherDataRepository1) {
+                          WeatherDataRepository weatherDataRepository) {
         this.cityRepository = cityRepository;
         this.cityManager = cityManager;
-        this.weatherDataRepository = weatherDataRepository1;
+        this.weatherDataRepository = weatherDataRepository;
     }
 
     /**
-     * API endpoint for retrieving all {@link City} objects
+     * API endpoint for retrieving information about all {@link City} objects for which data collection is enabled
      *
-     * @return list of all {@link City} objects
+     * @return list of {@link CityResponse} objects representing all {@link City} objects for which data collection is
+     * enabled
      */
     @GetMapping
-    ResponseEntity<List<City>> all() {
-        return ResponseEntity.ok(cityRepository.findAll());
+    ResponseEntity<List<CityResponse>> all() {
+        List<City> cities = cityRepository.findAllByImportingDataTrue();
+        List<CityResponse> responseList = new ArrayList<>();
+        for (City city : cities) {
+            responseList.add(new CityResponse(city));
+        }
+        return ResponseEntity.ok(responseList);
     }
 
     /**
      * API endpoint for adding and / or enabling weather data tracking for a {@link City} object
      *
      * @param addCityRequest request body (city name)
-     * @return the added / enabled {@link City} object
+     * @return a {@link CityResponse} object representing the added / enabled {@link City} object
      */
     @PostMapping
-    ResponseEntity<City> enable(@RequestBody AddCityRequest addCityRequest) {
+    ResponseEntity<CityResponse> enable(@RequestBody AddCityRequest addCityRequest) {
         if (addCityRequest.getName() == null || addCityRequest.getName().isEmpty()) {
             throw new MalformedCityNameException();
         }
 
         City city = cityManager.enableImporting(addCityRequest.getName());
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(city);
+        return ResponseEntity.status(HttpStatus.CREATED).body(new CityResponse(city));
     }
 
     /**
-     * API endpoint for retrieving a single {@link City} object
+     * API endpoint for retrieving information about a single {@link City} object
      *
      * @param id the {@link City} object's {@link City#id id}
-     * @return the selected {@link City} object
+     * @return a {@link CityResponse} object representing the selected {@link City} object
      */
     @GetMapping("/{id}")
-    ResponseEntity<City> one(@PathVariable Long id) {
+    ResponseEntity<CityResponse> one(@PathVariable Long id) {
         City city = cityRepository.findById(id).orElse(null);
 
         if (city == null) throw new CityNotFoundException(id);
-        return ResponseEntity.ok(city);
+        return ResponseEntity.ok(new CityResponse(city));
     }
 
     /**
