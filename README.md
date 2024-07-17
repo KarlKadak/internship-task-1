@@ -21,8 +21,9 @@ The code also has some more advanced functionalities which have not been specifi
 
 Before running the backend code, some prearations must be made.
 
-The program requires two environment variables to function correctly:
+The program requires three environment variables to function correctly:
 
+- **JAVA_HOME** - path to the JDK installation directory
 - **H2_DB_PATH** - path to the database to use for storing the application data, for simple testing `mem:/db` will suffice
 - **OPENWEATHER_API_KEY** - authentication key for using OpenWeather's API, can be acquired [here](https://home.openweathermap.org/api_keys)
 
@@ -43,61 +44,71 @@ The REST endpoints opened by the application are the following:
 
 1. `GET /cities`
 
-    **Description**: Retrieves information about all cities for which data collection is enabled.
+   **Description**: Retrieves information about all cities for which data collection is enabled.
 
-    **Steps**:
-    - Send a `GET` request to http://localhost:8080/v1/cities.
+   **Steps**:
 
-    **Expected Response**:
-    - HTTP Status Code: **200 OK**
-    - Response Body: A JSON array containing CityResponse objects representing the cities.
+   - Send a `GET` request to http://localhost:8080/v1/cities.
+
+   **Expected Response**:
+
+   - HTTP Status Code: **200 OK**
+   - Response Body: A JSON array containing CityResponse objects representing the cities.
 
 2. `POST /cities`
 
-    **Description**: Adds or enables weather data tracking for a city.
+   **Description**: Adds or enables weather data tracking for a city.
 
-    **Steps**:
-    - Send a `POST` request to http://localhost:8080/v1/cities.
-    - Include a JSON body with a city name, e.g., `{ "name" : "New York" }`.
+   **Steps**:
 
-    **Expected Response**:
-    - HTTP Status Code: **201 Created**
-    - Response Body: A JSON object representing the newly added city in CityResponse format.
+   - Send a `POST` request to http://localhost:8080/v1/cities.
+   - Include a JSON body with a city name, e.g., `{ "name" : "New York" }`.
+
+   **Expected Response**:
+
+   - HTTP Status Code: **201 Created**
+   - Response Body: A JSON object representing the newly added city in CityResponse format.
 
 3. `GET /cities/{id}`
 
-    **Description**: Retrieves information about a single city by its ID.
+   **Description**: Retrieves information about a single city by its ID.
 
-    **Steps**:
-    - Replace {id} with an existing city ID in the URL.
-    - Send a `GET` request to http://localhost:8080/v1/cities/{id}.
+   **Steps**:
 
-    **Expected Response**:
-    - HTTP Status Code: **200 OK**
-    - Response Body: A JSON object representing the city in CityResponse format.
+   - Replace {id} with an existing city ID in the URL.
+   - Send a `GET` request to http://localhost:8080/v1/cities/{id}.
+
+   **Expected Response**:
+
+   - HTTP Status Code: **200 OK**
+   - Response Body: A JSON object representing the city in CityResponse format.
 
 4. `DELETE /cities/{id}`
 
-    **Description**: Disables weather data tracking for a city.
+   **Description**: Disables weather data tracking for a city.
 
-    **Steps**:
-    - Replace {id} with an existing city ID in the URL.
-    - Send a `DELETE` request to http://localhost:8080/v1/cities/{id}.
+   **Steps**:
 
-    **Expected Response**:
-    - HTTP Status Code: **204 No Content**
+   - Replace {id} with an existing city ID in the URL.
+   - Send a `DELETE` request to http://localhost:8080/v1/cities/{id}.
+
+   **Expected Response**:
+
+   - HTTP Status Code: **204 No Content**
 
 5. `GET /cities/{id}/weather`
 
-    **Description**: Retrieves the most recently saved weather data entry for a city.
+   **Description**: Retrieves the most recently saved weather data entry for a city.
 
-    **Steps**:
-    - Replace {id} with an existing city ID in the URL.
-    - Send a `GET` request to http://localhost:8080/v1/cities/{id}/weather.
+   **Steps**:
 
-    **Expected Response**:
-    - HTTP Status Code: **200 OK**
-    - Response Body: A JSON object representing the weather data in WeatherResponse format.
+   - Replace {id} with an existing city ID in the URL.
+   - Send a `GET` request to http://localhost:8080/v1/cities/{id}/weather.
+
+   **Expected Response**:
+
+   - HTTP Status Code: **200 OK**
+   - Response Body: A JSON object representing the weather data in WeatherResponse format.
 
 ## Licensing
 
