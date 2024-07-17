@@ -1,3 +1,9 @@
+button,
+input,
+.alert {
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+}
+
 tr {
   height: 2.5em;
 }
@@ -33,4 +39,9 @@ img.ms-auto {
 .city-name-cell:hover {
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
   cursor: pointer;
+}
+
+div.flex-column {
+  width: 300px;
+  height: 100vh;
 }

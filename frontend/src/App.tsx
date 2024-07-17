@@ -1,5 +1,6 @@
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
+import "./styles/main.css";
 import SideBar from "./components/SideBar";
 import WeatherViewer from "./components/WeatherViewer";
 

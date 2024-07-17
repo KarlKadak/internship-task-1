@@ -11,7 +11,6 @@ import {
 } from "../services/api";
 import axios from "axios";
 import { ReactComponent as IconXLg } from "bootstrap-icons/icons/x-lg.svg";
-import "./CityList.css";
 
 interface CityListProps {
   selectedCity: number | null;
@@ -97,54 +96,57 @@ const CityList = forwardRef<CityListRef, CityListProps>((props, ref) => {
   }
 
   return (
-    <div className="mb-auto">
+    <>
       <span className="text-dark fs-5">City list</span>
-      <table>
-        <tbody>
-          {/* Populate the list with city objects */}
-          {cities.map((city) => (
-            <tr key={city.id}>
-              {/* Add the flag of the city's country if href present in the API response */}
-              <td>
-                {city.flagHref ? (
-                  <div className="float-end">
-                    <img
-                      src={city.flagHref}
-                      alt={`${city.name} flag`}
-                      className="ms-auto"
-                    />
-                  </div>
-                ) : null}
-              </td>
-              {/* Add the city name */}
-              <td
-                className={
-                  props.selectedCity === city.id
-                    ? "city-name-cell active-city"
-                    : "city-name-cell"
-                }
-              >
-                <div
-                  className="h-100"
+      <div
+        className="mb-auto"
+        style={{
+          overflow: "auto",
+        }}
+      >
+        <table>
+          <tbody>
+            {/* Populate the list with city objects */}
+            {cities.map((city) => (
+              <tr key={city.id}>
+                {/* Add the flag of the city's country if href present in the API response */}
+                <td>
+                  {city.flagHref ? (
+                    <div className="float-end">
+                      <img
+                        src={city.flagHref}
+                        alt={`${city.name} flag`}
+                        className="ms-auto"
+                      />
+                    </div>
+                  ) : null}
+                </td>
+                {/* Add the city name */}
+                <td
+                  className={
+                    props.selectedCity === city.id
+                      ? "city-name-cell active-city"
+                      : "city-name-cell"
+                  }
                   onClick={() => props.selectCity(city.id)}
                 >
-                  {city.name}
-                </div>
-              </td>
-              {/* Add a delete button */}
-              <td>
-                <div
-                  className="delete-button"
-                  onClick={() => deleteCity(city.id)}
-                >
-                  <IconXLg />
-                </div>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+                  <div className="h-100">{city.name}</div>
+                </td>
+                {/* Add a delete button */}
+                <td>
+                  <div
+                    className="delete-button"
+                    onClick={() => deleteCity(city.id)}
+                  >
+                    <IconXLg />
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </>
   );
 });
 

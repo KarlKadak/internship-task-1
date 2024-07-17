@@ -1,7 +1,6 @@
 import React, { useRef } from "react";
 import CityList, { CityListRef } from "./CityList";
 import AddCity from "./AddCity";
-import "./SideBar.css";
 
 interface SideBarProps {
   selectedCity: number | null;
@@ -17,7 +16,10 @@ const SideBar: React.FC<SideBarProps> = (props) => {
   };
 
   return (
-    <div className="d-flex flex-column flex-shrink-0 p-3 bg-light">
+    <div
+      className="d-flex flex-column flex-shrink-0 p-3 bg-light"
+      style={{ maxHeight: "100vh" }}
+    >
       <span className="text-dark fs-4">Weather app</span>
       <hr />
       <CityList

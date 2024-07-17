@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { requestAddCity, CityResponse } from "../services/api";
 import axios from "axios";
-import "./AddCity.css";
 
 interface AddCityProps {
   notifyRefresh: () => void;
