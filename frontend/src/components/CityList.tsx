@@ -1,29 +1,36 @@
 import React, {
-  useEffect,
-  useState,
-  useImperativeHandle,
   forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useState,
 } from "react";
-import { getAllCities, deleteCity, CityResponse } from "../services/api";
+import {
+  CityResponse,
+  requestAllCities,
+  requestDeleteCity,
+} from "../services/api";
 import axios from "axios";
 import { ReactComponent as IconXLg } from "bootstrap-icons/icons/x-lg.svg";
 import "./CityList.css";
 
-const CityList = forwardRef((props, ref) => {
+interface CityListProps {
+  selectCity: (id: number) => void;
+}
+
+export interface CityListRef {
+  refresh: () => void;
+}
+
+const CityList = forwardRef<CityListRef, CityListProps>((props, ref) => {
   // Prepare stateful values
   const [cities, setCities] = useState<CityResponse[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Expose the fetchCities method to the parent component
-  useImperativeHandle(ref, () => ({
-    fetchCities,
-  }));
-
-  // Fetches data about all of the cities
-  const fetchCities = async () => {
+  // Requests the list of cities and refreshes it
+  const refresh = async () => {
     try {
-      const cities = await getAllCities();
+      const cities = await requestAllCities();
       setCities(cities);
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
@@ -38,10 +45,15 @@ const CityList = forwardRef((props, ref) => {
     }
   };
 
+  // Expose the refresh function to the parent
+  useImperativeHandle(ref, () => ({
+    refresh,
+  }));
+
   // Deletes a single city with the given id
-  const handleDeleteCity = async (id: number) => {
+  const deleteCity = async (id: number) => {
     try {
-      await deleteCity(id);
+      await requestDeleteCity(id);
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
         // Set the error message as the API error response message
@@ -50,12 +62,12 @@ const CityList = forwardRef((props, ref) => {
         setError("API connection failure");
       }
     }
-    fetchCities();
+    refresh();
   };
 
   // Execute fetchCities when component mounts
   useEffect(() => {
-    fetchCities();
+    refresh();
   }, []);
 
   if (loading) {
@@ -109,7 +121,7 @@ const CityList = forwardRef((props, ref) => {
             <td>
               <div
                 className="delete-button"
-                onClick={() => handleDeleteCity(city.id)}
+                onClick={() => deleteCity(city.id)}
               >
                 <IconXLg />
               </div>

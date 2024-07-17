@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { addCity, CityResponse } from "../services/api";
+import { requestAddCity, CityResponse } from "../services/api";
 import axios from "axios";
 import "./AddCity.css";
 
-// Used for refreshing the city list when new cities are added using this component
 interface AddCityProps {
-  onAddCity: () => void;
+  notifyRefresh: () => void;
 }
 
-const AddCity: React.FC<AddCityProps> = ({ onAddCity }) => {
+const AddCity: React.FC<AddCityProps> = ({ notifyRefresh }) => {
   // Prepare stateful values
   const [cityName, setCityName] = useState<string>("");
   const [newCity, setNewCity] = useState<CityResponse | null>(null);
@@ -18,12 +17,12 @@ const AddCity: React.FC<AddCityProps> = ({ onAddCity }) => {
   const handleAddCity = async () => {
     try {
       // Make an HTTP request
-      const city = await addCity({ name: cityName });
+      const city = await requestAddCity({ name: cityName });
       setNewCity(city);
       // Clear the input field
       setCityName("");
       // Notify the parent component of new city being added
-      onAddCity();
+      notifyRefresh();
       setError(null);
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {

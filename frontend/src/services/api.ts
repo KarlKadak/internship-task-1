@@ -19,26 +19,26 @@ export interface WeatherResponse {
     iconHref?: string;
 }
 
-export const getAllCities = async (): Promise<CityResponse[]> => {
+export const requestAllCities = async (): Promise<CityResponse[]> => {
     const response = await axios.get<CityResponse[]>(API_URL);
     return response.data;
 };
 
-export const addCity = async (city: AddCityRequest): Promise<CityResponse> => {
+export const requestAddCity = async (city: AddCityRequest): Promise<CityResponse> => {
     const response = await axios.post<CityResponse>(API_URL, city);
     return response.data;
 };
 
-export const getCityById = async (id: number): Promise<CityResponse> => {
+export const requestCityById = async (id: number): Promise<CityResponse> => {
     const response = await axios.get<CityResponse>(`${API_URL}/${id}`);
     return response.data;
 };
 
-export const deleteCity = async (id: number): Promise<void> => {
+export const requestDeleteCity = async (id: number): Promise<void> => {
     await axios.delete(`${API_URL}/${id}`);
 };
 
-export const getCityWeather = async (id: number): Promise<WeatherResponse> => {
+export const requestCityWeather = async (id: number): Promise<WeatherResponse> => {
     const response = await axios.get<WeatherResponse>(`${API_URL}/${id}/weather`);
     return response.data;
 };
