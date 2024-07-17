@@ -17,6 +17,7 @@ export interface WeatherResponse {
     windSpeed?: number;
     humidity?: number;
     iconHref?: string;
+    timestamp: number;
 }
 
 export const requestAllCities = async (): Promise<CityResponse[]> => {

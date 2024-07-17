@@ -1,14 +1,16 @@
-import React from "react";
+import React, { useRef, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import SideBar from "./components/SideBar";
+import WeatherViewer from "./components/WeatherViewer";
 
 const App: React.FC = () => {
+  // Prepare stateful values
+  const [selectedCity, setSelectedCity] = useState<number | null>(null);
+
   return (
     <div className="d-flex">
-      <SideBar />
-      <div className="flex-grow-1 bg-dark text-white">
-        <span>Weather data area</span>
-      </div>
+      <SideBar selectCity={setSelectedCity} selectedCity={selectedCity} />
+      <WeatherViewer selectedCity={selectedCity} />
     </div>
   );
 };

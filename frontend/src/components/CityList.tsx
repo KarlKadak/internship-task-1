@@ -14,7 +14,8 @@ import { ReactComponent as IconXLg } from "bootstrap-icons/icons/x-lg.svg";
 import "./CityList.css";
 
 interface CityListProps {
-  selectCity: (id: number) => void;
+  selectedCity: number | null;
+  selectCity: (id: number | null) => void;
 }
 
 export interface CityListRef {
@@ -54,6 +55,7 @@ const CityList = forwardRef<CityListRef, CityListProps>((props, ref) => {
   const deleteCity = async (id: number) => {
     try {
       await requestDeleteCity(id);
+      if (props.selectedCity === id) props.selectCity(null);
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
         // Set the error message as the API error response message
@@ -97,37 +99,50 @@ const CityList = forwardRef<CityListRef, CityListProps>((props, ref) => {
   return (
     <div className="mb-auto">
       <span className="text-dark fs-5">City list</span>
-      <table className="list-unstyled">
-        {/* Populate the list with city objects */}
-        {cities.map((city) => (
-          <tr>
-            {/* Add the flag of the city's country if href present in the API response */}
-            <td>
-              {city.flagHref ? (
-                <div className="float-end">
-                  <img
-                    src={city.flagHref}
-                    alt={`${city.name} flag`}
-                    className="ms-auto"
-                  />
-                </div>
-              ) : null}
-            </td>
-            {/* Add the city name */}
-            <td className="city-name-cell">
-              <div className="city-button">{city.name}</div>
-            </td>
-            {/* Add a delete button */}
-            <td>
-              <div
-                className="delete-button"
-                onClick={() => deleteCity(city.id)}
+      <table>
+        <tbody>
+          {/* Populate the list with city objects */}
+          {cities.map((city) => (
+            <tr key={city.id}>
+              {/* Add the flag of the city's country if href present in the API response */}
+              <td>
+                {city.flagHref ? (
+                  <div className="float-end">
+                    <img
+                      src={city.flagHref}
+                      alt={`${city.name} flag`}
+                      className="ms-auto"
+                    />
+                  </div>
+                ) : null}
+              </td>
+              {/* Add the city name */}
+              <td
+                className={
+                  props.selectedCity === city.id
+                    ? "city-name-cell active-city"
+                    : "city-name-cell"
+                }
               >
-                <IconXLg />
-              </div>
-            </td>
-          </tr>
-        ))}
+                <div
+                  className="h-100"
+                  onClick={() => props.selectCity(city.id)}
+                >
+                  {city.name}
+                </div>
+              </td>
+              {/* Add a delete button */}
+              <td>
+                <div
+                  className="delete-button"
+                  onClick={() => deleteCity(city.id)}
+                >
+                  <IconXLg />
+                </div>
+              </td>
+            </tr>
+          ))}
+        </tbody>
       </table>
     </div>
   );

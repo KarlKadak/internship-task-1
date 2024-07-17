@@ -7,7 +7,7 @@ interface AddCityProps {
   notifyRefresh: () => void;
 }
 
-const AddCity: React.FC<AddCityProps> = ({ notifyRefresh }) => {
+const AddCity: React.FC<AddCityProps> = (props) => {
   // Prepare stateful values
   const [cityName, setCityName] = useState<string>("");
   const [newCity, setNewCity] = useState<CityResponse | null>(null);
@@ -22,7 +22,7 @@ const AddCity: React.FC<AddCityProps> = ({ notifyRefresh }) => {
       // Clear the input field
       setCityName("");
       // Notify the parent component of new city being added
-      notifyRefresh();
+      props.notifyRefresh();
       setError(null);
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {

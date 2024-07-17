@@ -1,9 +1,14 @@
-import React, { useRef, useState } from "react";
+import React, { useRef } from "react";
 import CityList, { CityListRef } from "./CityList";
 import AddCity from "./AddCity";
 import "./SideBar.css";
 
-const SideBar: React.FC = () => {
+interface SideBarProps {
+  selectedCity: number | null;
+  selectCity: (id: number | null) => void;
+}
+
+const SideBar: React.FC<SideBarProps> = (props) => {
   // Create a ref to hold the city list
   const cityListRef = useRef<CityListRef>(null);
 
@@ -11,13 +16,15 @@ const SideBar: React.FC = () => {
     if (cityListRef.current) cityListRef.current?.refresh();
   };
 
-  const [selectedCity, setSelectedCity] = useState<number | null>(null);
-
   return (
     <div className="d-flex flex-column flex-shrink-0 p-3 bg-light">
       <span className="text-dark fs-4">Weather app</span>
       <hr />
-      <CityList ref={cityListRef} selectCity={setSelectedCity} />
+      <CityList
+        ref={cityListRef}
+        selectCity={props.selectCity}
+        selectedCity={props.selectedCity}
+      />
       <AddCity notifyRefresh={refreshCityList} />
     </div>
   );
