@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { requestAddCity, CityResponse } from "../services/api";
 import axios from "axios";
+import { ReactComponent as IconGithub } from "bootstrap-icons/icons/github.svg";
 
 interface AddCityProps {
   notifyRefresh: () => void;
@@ -48,12 +49,11 @@ const AddCity: React.FC<AddCityProps> = (props) => {
   }, [newCity, error]);
 
   return (
-    <div>
+    <div className="mt-2">
       {error && <div className="alert alert-warning">{error}</div>}
       {newCity && (
         <div className="alert alert-primary">Added city: {newCity.name}</div>
       )}
-      <span className="text-dark fs-5">Add city</span>
       {/* onKeyDown handles enter press when the input field is in focus */}
       <input
         type="text"
@@ -65,11 +65,27 @@ const AddCity: React.FC<AddCityProps> = (props) => {
           }
         }}
         placeholder="Enter city name"
-        className="input-group mb-3"
+        className="input-group mb-2"
       />
-      <button className="btn btn-primary" onClick={handleAddCity}>
-        Add
-      </button>
+      <div className="d-flex justify-content-between align-items-center">
+        {/* Button for adding city */}
+        <button className="btn btn-primary" onClick={handleAddCity}>
+          Add
+        </button>
+        {/* Link to the GitHub repository */}
+        <a
+          href="https://github.com/KarlKadak/internship-task-1"
+          target="_blank"
+          rel="noreferrer"
+        >
+          <IconGithub
+            style={{
+              width: "2em",
+              height: "2em",
+            }}
+          />
+        </a>
+      </div>
     </div>
   );
 };

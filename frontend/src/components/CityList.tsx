@@ -71,82 +71,61 @@ const CityList = forwardRef<CityListRef, CityListProps>((props, ref) => {
     refresh();
   }, []);
 
-  if (loading) {
+  // Construct a message indicating some irregularity
+  const constructMessage = (message: string | null) => {
     return (
       <div className="mb-auto">
-        <p>Loading...</p>
+        <p>{message}</p>
       </div>
     );
-  }
+  };
 
-  if (error) {
-    return (
-      <div className="mb-auto">
-        <p>{error}</p>
-      </div>
-    );
-  }
-
-  if (cities.length === 0) {
-    return (
-      <div className="mb-auto">
-        <p>Add some cities to get started!</p>
-      </div>
-    );
-  }
+  // Return messages for different situations
+  if (loading) return constructMessage("Loading...");
+  if (error) return constructMessage(error);
+  if (cities.length === 0)
+    return constructMessage("Add some cities to get started");
 
   return (
-    <>
-      <span className="text-dark fs-5">City list</span>
-      <div
-        className="mb-auto"
-        style={{
-          overflow: "auto",
-        }}
-      >
-        <table>
-          <tbody>
-            {/* Populate the list with city objects */}
-            {cities.map((city) => (
-              <tr key={city.id}>
-                {/* Add the flag of the city's country if href present in the API response */}
-                <td>
-                  {city.flagHref ? (
-                    <div className="float-end">
-                      <img
-                        src={city.flagHref}
-                        alt={`${city.name} flag`}
-                        className="ms-auto"
-                      />
-                    </div>
-                  ) : null}
-                </td>
-                {/* Add the city name */}
-                <td
-                  className={
-                    props.selectedCity === city.id
-                      ? "city-name-cell active-city"
-                      : "city-name-cell"
-                  }
-                  onClick={() => props.selectCity(city.id)}
-                >
-                  <div className="h-100">{city.name}</div>
-                </td>
-                {/* Add a delete button */}
-                <td>
-                  <div
-                    className="delete-button"
-                    onClick={() => deleteCity(city.id)}
-                  >
-                    <IconXLg />
+    <div className="mb-auto overflow-auto">
+      <table>
+        <tbody>
+          {/* Populate the list with city objects */}
+          {cities.map((city) => (
+            <tr key={city.id}>
+              {/* Add the flag of the city's country if href present in the API response */}
+              <td className="" style={{ height: "100%" }}>
+                {city.flagHref ? (
+                  <div>
+                    <img
+                      src={city.flagHref}
+                      style={{ height: "2em" }}
+                      alt={`${city.name} flag`}
+                      className="flag"
+                    />
                   </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </>
+                ) : null}
+              </td>
+              {/* Add the city name */}
+              <td
+                className="name-cell"
+                onClick={() => props.selectCity(city.id)}
+              >
+                <div style={{ marginLeft: "0.5em", marginRight: "0.5em" }}>
+                  {city.name}
+                </div>
+              </td>
+              {/* Add a delete button */}
+              <td className="delete-cell" onClick={() => deleteCity(city.id)}>
+                <div>
+                  <IconXLg />
+                </div>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 });
 

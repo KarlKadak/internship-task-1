@@ -24,9 +24,11 @@ const WeatherViewer: React.FC<WeatherViewerProps> = (props) => {
       setWeatherData(null);
       return;
     }
+    // Reset error and loading status
     setError(null);
     setLoading(true);
     try {
+      // Request the data
       const weatherData = await requestCityWeather(props.selectedCity);
       setWeatherData(weatherData);
       const city = await requestCityById(props.selectedCity);
@@ -55,11 +57,11 @@ const WeatherViewer: React.FC<WeatherViewerProps> = (props) => {
   const renderWeatherViewer = () => {
     return (
       <div className="flex-grow-1 bg-dark text-white">
-        <div className="w-100 h-100 d-flex justify-content-center align-items-center hei">
+        <div className="w-100 h-100 d-flex justify-content-center align-items-center">
           <div>
             {error}
             {loading && "Loading..."}
-            {!error
+            {!error && !loading
               ? weatherData && city
                 ? renderWeatherDataDiv()
                 : loading ||
@@ -78,41 +80,42 @@ const WeatherViewer: React.FC<WeatherViewerProps> = (props) => {
       : null;
 
     return (
-      <>
+      <div>
         {/* Add the coutry flag if server returns href to it */}
         {city?.flagHref ? (
-          <img
-            src={city.flagHref}
-            alt={`${city.name} flag`}
-            className="ms-auto float-start"
-          />
+          <img src={city.flagHref} className="flag" alt={`${city.name} flag`} />
         ) : null}
         {/* Add the weather condition icon if server returns href to it */}
         {weatherData?.iconHref ? (
           <img
             src={weatherData?.iconHref}
             alt={`${city?.name} weather condition`}
-            className="ms-auto float-end"
           />
         ) : null}
         <h1>{city?.name}</h1>
         <br />
         {/* Populate the rest of the div with weather data */}
-        <h3>
+        <span>
           Air temperature:{" "}
           {weatherData?.airTemp ? weatherData.airTemp + " °C" : "N/A"}
-        </h3>
-        <h3>
+        </span>
+        <br />
+        <span>
           Wind speed:{" "}
           {weatherData?.windSpeed ? weatherData.windSpeed + " m/s" : "N/A"}
-        </h3>
-        <h3>
+        </span>
+        <br />
+        <span>
           Humidity: {weatherData?.humidity ? weatherData.humidity + "%" : "N/A"}
-        </h3>
-        <h3>
-          Measured at {measuredTime ? measuredTime.toLocaleTimeString() : "N/A"}
-        </h3>
-      </>
+        </span>
+        <br />
+        <span className="text-secondary">
+          Measured at{" "}
+          {measuredTime
+            ? measuredTime.toLocaleTimeString().replaceAll(".", ":")
+            : "N/A"}
+        </span>
+      </div>
     );
   };
 

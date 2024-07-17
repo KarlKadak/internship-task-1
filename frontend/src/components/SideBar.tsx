@@ -17,10 +17,10 @@ const SideBar: React.FC<SideBarProps> = (props) => {
 
   return (
     <div
-      className="d-flex flex-column flex-shrink-0 p-3 bg-light"
-      style={{ maxHeight: "100vh" }}
+      className="d-flex flex-column flex-shrink-0 p-3"
+      style={{ width: "300px" }}
     >
-      <span className="text-dark fs-4">Weather app</span>
+      <span className="fs-4">Weather app</span>
       <hr />
       <CityList
         ref={cityListRef}

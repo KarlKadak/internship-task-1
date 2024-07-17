@@ -1,47 +1,29 @@
-button,
-input,
-.alert {
+.btn,
+.alert,
+.flag {
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
 }
 
-tr {
-  height: 2.5em;
-}
-
-img.ms-auto {
-  height: 2em;
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
-  border-radius: 0.25em;
-  margin-right: 0.5em;
-}
-
-.delete-button {
-  line-height: 0px;
-  padding: 0.5em;
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
-  border-radius: 0.25em;
+.name-cell {
   transition: all 0.25s;
 }
 
-.delete-button:hover {
+.name-cell:hover {
+  background-color: lightgray;
+  cursor: pointer;
+}
+
+.delete-cell {
+  line-height: 0px;
+  padding: 0.5em;
+  color: red;
+  height: 1lh;
+  width: 1lh;
+  transition: all 0.25s;
+}
+
+.delete-cell:hover {
   background-color: red;
   color: white;
   cursor: pointer;
-}
-
-.city-name-cell {
-  width: 100%;
-  border-radius: 0.25em;
-  transition: all 0.25s;
-}
-
-.active-city,
-.city-name-cell:hover {
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
-  cursor: pointer;
-}
-
-div.flex-column {
-  width: 300px;
-  height: 100vh;
 }
