@@ -1,23 +1,14 @@
-import React, { useRef } from "react";
-import CityList from "./components/CityList";
-import AddCity from "./components/AddCity";
+import React from "react";
+import "bootstrap/dist/css/bootstrap.min.css";
+import SideBar from "./components/SideBar";
 
 const App: React.FC = () => {
-  // Used for updating the city list when new cities are successfully added with AddCity
-  const cityListRef = useRef<{ fetchCities: () => void }>(null);
-
-  // Call CityList's fetchCities function when new cities are successfully added with AddCity
-  const handleAddCityAndFetchCities = () => {
-    if (cityListRef.current) {
-      cityListRef.current.fetchCities();
-    }
-  };
-
   return (
-    <div className="d-flex flex-column align-items-center justify-content-center">
-      <h1 className="text-primary">Weather app</h1>
-      <AddCity onAddCity={handleAddCityAndFetchCities} />
-      <CityList ref={cityListRef} />
+    <div className="d-flex">
+      <SideBar />
+      <div className="flex-grow-1 bg-dark text-white">
+        <span>Weather data area</span>
+      </div>
     </div>
   );
 };

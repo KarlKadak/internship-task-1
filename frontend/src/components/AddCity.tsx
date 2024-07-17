@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { addCity, CityResponse } from "../services/api";
 import axios from "axios";
+import "./AddCity.css";
 
 // Used for refreshing the city list when new cities are added using this component
 interface AddCityProps {
@@ -23,6 +24,7 @@ const AddCity: React.FC<AddCityProps> = ({ onAddCity }) => {
       setCityName("");
       // Notify the parent component of new city being added
       onAddCity();
+      setError(null);
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
         // Set the error message as the API error response message
@@ -30,6 +32,7 @@ const AddCity: React.FC<AddCityProps> = ({ onAddCity }) => {
       } else {
         setError("API connection failure");
       }
+      setNewCity(null);
     }
   };
 
@@ -48,22 +51,27 @@ const AddCity: React.FC<AddCityProps> = ({ onAddCity }) => {
 
   return (
     <div>
-      <h2 className="text-center text-muted">Add city</h2>
-      <div className="d-flex">
-        <input
-          type="text"
-          value={cityName}
-          onChange={(e) => setCityName(e.target.value)}
-          placeholder="Enter city name"
-        />
-        <button className="btn btn-primary" onClick={handleAddCity}>
-          Add City
-        </button>
-      </div>
+      {error && <div className="alert alert-warning">{error}</div>}
       {newCity && (
         <div className="alert alert-primary">Added city: {newCity.name}</div>
       )}
-      {error && <div className="alert alert-warning">{error}</div>}
+      <span className="text-dark fs-5">Add city</span>
+      {/* onKeyDown handles enter press when the input field is in focus */}
+      <input
+        type="text"
+        value={cityName}
+        onChange={(e) => setCityName(e.target.value)}
+        onKeyDown={(event: React.KeyboardEvent<HTMLInputElement>) => {
+          if (event.key === "Enter") {
+            handleAddCity();
+          }
+        }}
+        placeholder="Enter city name"
+        className="input-group mb-3"
+      />
+      <button className="btn btn-primary" onClick={handleAddCity}>
+        Add
+      </button>
     </div>
   );
 };
