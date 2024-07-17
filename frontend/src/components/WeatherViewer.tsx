@@ -57,7 +57,7 @@ const WeatherViewer: React.FC<WeatherViewerProps> = (props) => {
   const renderWeatherViewer = () => {
     return (
       <div className="flex-grow-1 bg-dark text-white">
-        <div className="w-100 h-100 d-flex justify-content-center align-items-center">
+        <div className="w-100 h-100 d-flex justify-content-center align-items-center p-4">
           <div>
             {error}
             {loading && "Loading..."}
