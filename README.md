@@ -12,6 +12,11 @@ The code also has some more advanced functionalities which have not been specifi
 
 - when querying for weather data, the backend API also returns a link to an image representing the weather condition
 - when querying for city data, the backend API also returns a link to an image of the flag of the country where the queried city resides
+- the frontend app shows the image representing the weather condition when viewing a city's weather data
+- the frontend app shows the flags of the countries where cities reside in the city list and when viewing a city's weather data
+- deployed the production build of the frontend app to [GitHub pages](https://karlkadak.github.io/internship-task-1/) (running the backend locally is still required)
+- generated and deployed Javadoc documentation of the backend code to [GitHub pages](https://karlkadak.github.io/internship-task-1/javadoc)
+- generated and deployed a code coverage report of the tests for the backend code to [GitHub pages](https://karlkadak.github.io/internship-task-1/coverage)
 
 ## Guide for testing functionality
 
@@ -109,6 +114,19 @@ The REST endpoints opened by the application are the following:
 
    - HTTP Status Code: **200 OK**
    - Response Body: A JSON object representing the weather data in WeatherResponse format.
+
+### Frontend
+
+Testing the frontend is easy, just head to [this repository's GitHub pages deployment URL](https://karlkadak.github.io/internship-task-1/).
+
+If you want to run the app locally, you can do so by following these steps:
+
+- ensure you have [Node.js](https://nodejs.org) installed
+- clone the repository
+- navigate to the `frontend` directory
+- run `npm install` to download the prerequisites
+- run `npm start` to start serving the application on port `3000`
+- open http://localhost:3000 on your browser
 
 ## Licensing
 
