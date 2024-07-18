@@ -1,0 +1,219 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > WeatherData</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">dev.karlkadak.backend.entity</a>
+</div>
+
+<h1>Coverage Summary for Class: WeatherData (dev.karlkadak.backend.entity)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">WeatherData</td>
+<td class="coverageStat">
+  <span class="percent">
+    87.5%
+  </span>
+  <span class="absValue">
+    (7/8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    50%
+  </span>
+  <span class="absValue">
+    (1/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    93.3%
+  </span>
+  <span class="absValue">
+    (14/15)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">WeatherData$HibernateInstantiator$IuujSHTb</td>
+  </tr>
+  <tr>
+    <td class="name">WeatherData$HibernateProxy$XUTsGcxj</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    87.5%
+  </span>
+  <span class="absValue">
+    (7/8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    50%
+  </span>
+  <span class="absValue">
+    (1/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    93.3%
+  </span>
+  <span class="absValue">
+    (14/15)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package dev.karlkadak.backend.entity;
+&nbsp;
+&nbsp;import jakarta.persistence.*;
+&nbsp;import lombok.AccessLevel;
+&nbsp;import lombok.Getter;
+&nbsp;import lombok.NoArgsConstructor;
+&nbsp;import lombok.NonNull;
+&nbsp;
+&nbsp;/**
+&nbsp; * Class representing a single point of gathered weather data for a single city
+&nbsp; */
+&nbsp;@Entity
+<b class="fc">&nbsp;@NoArgsConstructor(access = AccessLevel.PROTECTED) // Required for JPA</b>
+&nbsp;public class WeatherData {
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Primary key
+&nbsp;     */
+&nbsp;    @Id
+&nbsp;    @GeneratedValue(strategy = GenerationType.IDENTITY)
+&nbsp;    private long id;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * The city for which the data is collected
+&nbsp;     */
+&nbsp;    @NonNull
+&nbsp;    @JoinColumn(name = &quot;city_id&quot;, nullable = false)
+&nbsp;    @ManyToOne
+<b class="nc">&nbsp;    @Getter</b>
+&nbsp;    private City city;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * UNIX timestamp of the data calculation, UTC
+&nbsp;     */
+&nbsp;    @Column(nullable = false)
+<b class="fc">&nbsp;    @Getter</b>
+&nbsp;    private long timestamp;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Air temperature at time of data calculation, Celsius&lt;br&gt; Null in case of missing value
+&nbsp;     */
+<b class="fc">&nbsp;    @Getter</b>
+&nbsp;    private Double airTemperature;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Wind speed at time of data calculation, meter/sec&lt;br&gt; Null in case of missing value
+&nbsp;     */
+<b class="fc">&nbsp;    @Getter</b>
+&nbsp;    private Double windSpeed;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Humidity at time of data calculation, %&lt;br&gt; Null in case of missing value
+&nbsp;     */
+<b class="fc">&nbsp;    @Getter</b>
+&nbsp;    private Integer humidity;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Weather state icon code at time of data calculation
+&nbsp;     */
+<b class="fc">&nbsp;    @Getter</b>
+&nbsp;    private String iconCode;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Default constructor
+&nbsp;     *
+&nbsp;     * @param city           The city for which the data is collected
+&nbsp;     * @param timestamp      UNIX timestamp of the data calculation, UTC
+&nbsp;     * @param airTemperature Air temperature at time of data calculation, Celsius&lt;br&gt; Null in case of missing value
+&nbsp;     * @param windSpeed      Wind speed at time of data calculation, meter/sec&lt;br&gt; Null in case of missing value
+&nbsp;     * @param humidity       Humidity at time of data calculation, %&lt;br&gt; Null in case of missing value
+&nbsp;     * @param iconCode       icon code of the weather condition
+&nbsp;     */
+<b class="pc">&nbsp;    public WeatherData(@NonNull City city, long timestamp, Double airTemperature, Double windSpeed, Integer humidity,</b>
+<b class="fc">&nbsp;                       String iconCode) {</b>
+<b class="fc">&nbsp;        this.city = city;</b>
+<b class="fc">&nbsp;        this.timestamp = timestamp;</b>
+<b class="fc">&nbsp;        this.airTemperature = airTemperature;</b>
+<b class="fc">&nbsp;        this.windSpeed = windSpeed;</b>
+<b class="fc">&nbsp;        this.humidity = humidity;</b>
+<b class="fc">&nbsp;        this.iconCode = iconCode;</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-07-18 09:15</div>
+</div>
+</body>
+</html>

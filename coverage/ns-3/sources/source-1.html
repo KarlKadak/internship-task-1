@@ -1,0 +1,231 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > CityController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">dev.karlkadak.backend.controller</a>
+</div>
+
+<h1>Coverage Summary for Class: CityController (dev.karlkadak.backend.controller)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">CityController</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (6/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (12/12)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (23/23)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package dev.karlkadak.backend.controller;
+&nbsp;
+&nbsp;import dev.karlkadak.backend.dto.AddCityRequest;
+&nbsp;import dev.karlkadak.backend.dto.CityResponse;
+&nbsp;import dev.karlkadak.backend.dto.WeatherResponse;
+&nbsp;import dev.karlkadak.backend.entity.City;
+&nbsp;import dev.karlkadak.backend.entity.WeatherData;
+&nbsp;import dev.karlkadak.backend.exception.CityNotFoundException;
+&nbsp;import dev.karlkadak.backend.exception.MalformedCityNameException;
+&nbsp;import dev.karlkadak.backend.exception.WeatherDataMissingException;
+&nbsp;import dev.karlkadak.backend.repository.CityRepository;
+&nbsp;import dev.karlkadak.backend.repository.WeatherDataRepository;
+&nbsp;import dev.karlkadak.backend.service.CityManager;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.http.HttpStatus;
+&nbsp;import org.springframework.http.ResponseEntity;
+&nbsp;import org.springframework.web.bind.annotation.*;
+&nbsp;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Optional;
+&nbsp;
+&nbsp;/**
+&nbsp; * REST controller for interacting with the city database
+&nbsp; */
+&nbsp;@RestController
+&nbsp;@RequestMapping(&quot;${api.prefix}/cities&quot;)
+&nbsp;public class CityController {
+&nbsp;
+&nbsp;    private final CityRepository cityRepository;
+&nbsp;    private final CityManager cityManager;
+&nbsp;    private final WeatherDataRepository weatherDataRepository;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    public CityController(CityRepository cityRepository, CityManager cityManager,
+<b class="fc">&nbsp;                          WeatherDataRepository weatherDataRepository) {</b>
+<b class="fc">&nbsp;        this.cityRepository = cityRepository;</b>
+<b class="fc">&nbsp;        this.cityManager = cityManager;</b>
+<b class="fc">&nbsp;        this.weatherDataRepository = weatherDataRepository;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * API endpoint for retrieving information about all {@link City} objects for which data collection is enabled
+&nbsp;     *
+&nbsp;     * @return list of {@link CityResponse} objects representing all {@link City} objects for which data collection is
+&nbsp;     * enabled
+&nbsp;     */
+&nbsp;    @GetMapping
+&nbsp;    ResponseEntity&lt;List&lt;CityResponse&gt;&gt; all() {
+<b class="fc">&nbsp;        List&lt;City&gt; cities = cityRepository.findAllByImportingDataTrue();</b>
+<b class="fc">&nbsp;        List&lt;CityResponse&gt; responseList = new ArrayList&lt;&gt;();</b>
+<b class="fc">&nbsp;        for (City city : cities) {</b>
+<b class="fc">&nbsp;            responseList.add(new CityResponse(city));</b>
+&nbsp;        }
+<b class="fc">&nbsp;        return ResponseEntity.ok(responseList);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * API endpoint for adding and / or enabling weather data tracking for a {@link City} object
+&nbsp;     *
+&nbsp;     * @param addCityRequest request body (city name)
+&nbsp;     * @return a {@link CityResponse} object representing the added / enabled {@link City} object
+&nbsp;     */
+&nbsp;    @PostMapping
+&nbsp;    ResponseEntity&lt;CityResponse&gt; enable(@RequestBody AddCityRequest addCityRequest) {
+<b class="fc">&nbsp;        if (addCityRequest.getName() == null || addCityRequest.getName().isEmpty()) {</b>
+<b class="fc">&nbsp;            throw new MalformedCityNameException();</b>
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        City city = cityManager.enableImporting(addCityRequest.getName());</b>
+&nbsp;
+<b class="fc">&nbsp;        return ResponseEntity.status(HttpStatus.CREATED).body(new CityResponse(city));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * API endpoint for retrieving information about a single {@link City} object
+&nbsp;     *
+&nbsp;     * @param id the {@link City} object&#39;s {@link City#id id}
+&nbsp;     * @return a {@link CityResponse} object representing the selected {@link City} object
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/{id}&quot;)
+&nbsp;    ResponseEntity&lt;CityResponse&gt; one(@PathVariable Long id) {
+<b class="fc">&nbsp;        City city = cityRepository.findById(id).orElse(null);</b>
+&nbsp;
+<b class="fc">&nbsp;        if (city == null) throw new CityNotFoundException(id);</b>
+<b class="fc">&nbsp;        return ResponseEntity.ok(new CityResponse(city));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * API endpoint for disabling weather data tracking for a {@link City} object
+&nbsp;     *
+&nbsp;     * @param id the {@link City} object&#39;s {@link City#id id}
+&nbsp;     * @return an empty {@link ResponseEntity}
+&nbsp;     */
+&nbsp;    @DeleteMapping(&quot;/{id}&quot;)
+&nbsp;    ResponseEntity&lt;Void&gt; disable(@PathVariable Long id) {
+<b class="fc">&nbsp;        City city = cityManager.disableImporting(id);</b>
+<b class="fc">&nbsp;        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * API endpoint for requesting the most recent weather data linked to a {@link City} object
+&nbsp;     *
+&nbsp;     * @param id the {@link City} object&#39;s {@link City#id id}
+&nbsp;     * @return the DTO of latest recorded {@link WeatherData} object
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/{id}/weather&quot;)
+&nbsp;    ResponseEntity&lt;WeatherResponse&gt; weather(@PathVariable Long id) {
+<b class="fc">&nbsp;        City city = cityRepository.findById(id).orElse(null);</b>
+<b class="fc">&nbsp;        if (city == null) throw new CityNotFoundException(id);</b>
+<b class="fc">&nbsp;        Optional&lt;WeatherData&gt; weatherDataOptional = weatherDataRepository.findTopByCity_IdOrderByTimestampDesc(id);</b>
+<b class="fc">&nbsp;        if (weatherDataOptional.isEmpty()) throw new WeatherDataMissingException();</b>
+<b class="fc">&nbsp;        return ResponseEntity.ok(new WeatherResponse(weatherDataOptional.get()));</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-07-18 09:15</div>
+</div>
+</body>
+</html>

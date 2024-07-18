@@ -1,0 +1,324 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > CityManager</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">dev.karlkadak.backend.service</a>
+</div>
+
+<h1>Coverage Summary for Class: CityManager (dev.karlkadak.backend.service)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">CityManager</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (5/5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (22/22)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (43/43)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">CityManager$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (6/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (22/22)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (44/44)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package dev.karlkadak.backend.service;
+&nbsp;
+&nbsp;import com.fasterxml.jackson.core.type.TypeReference;
+&nbsp;import com.fasterxml.jackson.databind.JsonNode;
+&nbsp;import com.fasterxml.jackson.databind.ObjectMapper;
+&nbsp;import dev.karlkadak.backend.entity.City;
+&nbsp;import dev.karlkadak.backend.exception.*;
+&nbsp;import dev.karlkadak.backend.repository.CityRepository;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.beans.factory.annotation.Value;
+&nbsp;import org.springframework.data.domain.Example;
+&nbsp;import org.springframework.stereotype.Service;
+&nbsp;import org.springframework.web.client.RestTemplate;
+&nbsp;
+&nbsp;import java.util.Map;
+&nbsp;import java.util.Optional;
+&nbsp;import java.util.logging.Logger;
+&nbsp;
+&nbsp;/**
+&nbsp; * Used for managing the cities and their tracking in the database
+&nbsp; * &lt;br&gt;Also logs the management actions using {@link java.util.logging.Logger}
+&nbsp; */
+&nbsp;@Service
+&nbsp;public class CityManager {
+&nbsp;
+&nbsp;    private final CityRepository cityRepository;
+&nbsp;    private final Logger logger;
+&nbsp;    private final RestTemplate restTemplate;
+&nbsp;    private final ObjectMapper objectMapper;
+&nbsp;    private final WeatherDataImporter weatherDataImporter;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * API key gathered from application.properties which is used for accessing the
+&nbsp;     * &lt;a href=&quot;https://openweathermap.org/api&quot;&gt;OpenWeather API&lt;/a&gt;
+&nbsp;     */
+&nbsp;    @Value(&quot;${openweather.api.key}&quot;)
+&nbsp;    private String apiKey;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    public CityManager(CityRepository cityRepository, Logger logger, RestTemplate restTemplate,
+<b class="fc">&nbsp;                       ObjectMapper objectMapper, WeatherDataImporter weatherDataImporter) {</b>
+<b class="fc">&nbsp;        this.cityRepository = cityRepository;</b>
+<b class="fc">&nbsp;        this.logger = logger;</b>
+<b class="fc">&nbsp;        this.restTemplate = restTemplate;</b>
+<b class="fc">&nbsp;        this.objectMapper = objectMapper;</b>
+<b class="fc">&nbsp;        this.weatherDataImporter = weatherDataImporter;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Adds a {@link City} object with the given name to the database or enables tracking its weather data in case it
+&nbsp;     * already exists
+&nbsp;     *
+&nbsp;     * @param name name of the city to add / toggle
+&nbsp;     * @return generated / toggled {@link City} object
+&nbsp;     */
+&nbsp;    public City enableImporting(String name) {
+&nbsp;        // Retrieve the complete city object
+<b class="fc">&nbsp;        City city = retrieveCompleteCity(name);</b>
+&nbsp;
+<b class="fc">&nbsp;        boolean cityIsPresent = cityRepository.exists(Example.of(city));</b>
+&nbsp;
+&nbsp;        // Throw exception if city is already being tracked
+<b class="fc">&nbsp;        if (cityIsPresent &amp;&amp; city.isImportingData()) throw new CityAlreadyBeingTrackedException();</b>
+&nbsp;
+&nbsp;        // Enable data tracking if city is present and not being tracked
+<b class="fc">&nbsp;        if (cityIsPresent) city.setImportingData(true);</b>
+&nbsp;
+&nbsp;        // Save the city to database (adds it if not present / edits the current instance if present)
+&nbsp;        // Also gets current weather data
+<b class="fc">&nbsp;        cityRepository.save(city);</b>
+<b class="fc">&nbsp;        weatherDataImporter.fetchAndSave(city);</b>
+&nbsp;
+&nbsp;        // Log the action
+<b class="fc">&nbsp;        logger.info(String.format(&quot;Enabled tracking for city \&quot;%s\&quot;.&quot;, city.getName()));</b>
+&nbsp;
+<b class="fc">&nbsp;        return city;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Disables the weather data tracking for {@link City} object with given ID
+&nbsp;     *
+&nbsp;     * @param id ID of the {@link City} object to disable
+&nbsp;     * @return toggled {@link City} object
+&nbsp;     */
+&nbsp;    public City disableImporting(long id) {
+&nbsp;        // Retrieve the city object
+<b class="fc">&nbsp;        Optional&lt;City&gt; retrievedCityOptional = cityRepository.findById(id);</b>
+<b class="fc">&nbsp;        if (retrievedCityOptional.isEmpty()) throw new CityNotFoundException(id);</b>
+<b class="fc">&nbsp;        City city = retrievedCityOptional.get();</b>
+&nbsp;
+&nbsp;        // Throw exception if tracking for city is already disabled
+<b class="fc">&nbsp;        if (!city.isImportingData()) throw new CityAlreadyNotBeingTrackedException();</b>
+&nbsp;
+&nbsp;        // Toggle the tracking
+<b class="fc">&nbsp;        city.setImportingData(false);</b>
+&nbsp;
+&nbsp;        // Save the city to database
+<b class="fc">&nbsp;        cityRepository.save(city);</b>
+&nbsp;
+&nbsp;        // Log the action
+<b class="fc">&nbsp;        logger.info(String.format(&quot;Disabled tracking for city \&quot;%s\&quot;.&quot;, city.getName()));</b>
+&nbsp;
+<b class="fc">&nbsp;        return city;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Retrieves a complete {@link City} object using the city name received using the &lt;a
+&nbsp;     * href=&quot;https://openweathermap.org/api&quot;&gt;OpenWeather API&lt;/a&gt;&lt;br&gt; In case such city already exists in the database,
+&nbsp;     * returns that instance instead
+&nbsp;     * &lt;br&gt;Needs to be package-private in order to test directly
+&nbsp;     *
+&nbsp;     * @param name city name to look up
+&nbsp;     * @return a {@link City} object linked to the name of the city input, if city is present in database returns that
+&nbsp;     * instance
+&nbsp;     */
+&nbsp;    City retrieveCompleteCity(String name) {
+&nbsp;        // Check the name for correct formatting
+<b class="fc">&nbsp;        if (!nameFormattedCorrectly(name)) throw new MalformedCityNameException();</b>
+&nbsp;
+&nbsp;        // Initialize variables
+&nbsp;        JsonNode arrayNode;
+&nbsp;        String completeName;
+&nbsp;        double latitude;
+&nbsp;        double longitude;
+&nbsp;        String countryCode;
+&nbsp;
+&nbsp;        // Perform the API request
+&nbsp;        try {
+<b class="fc">&nbsp;            String requestUrl = String.format(&quot;https://api.openweathermap.org/geo/1.0/direct?q=%s=&amp;limit=1&amp;appid=%s&quot;,</b>
+&nbsp;                                              name, apiKey);
+<b class="fc">&nbsp;            String jsonResponse = restTemplate.getForObject(requestUrl, String.class);</b>
+<b class="fc">&nbsp;            arrayNode = objectMapper.readTree(jsonResponse);</b>
+&nbsp;
+&nbsp;            // Throw exception in case of a processing error or an empty response
+<b class="fc">&nbsp;            if (arrayNode == null || !arrayNode.isArray()) throw new Exception();</b>
+<b class="fc">&nbsp;        } catch (Exception e) {</b>
+<b class="fc">&nbsp;            logger.warning(String.format(&quot;API response processing error when retrieving data for city \&quot;%s\&quot;.&quot;, name));</b>
+<b class="fc">&nbsp;            throw new FailedCityDataImportException();</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        // Throw exception if city is not present
+<b class="fc">&nbsp;        if (arrayNode.isEmpty()) throw new CityNotFoundException();</b>
+&nbsp;
+&nbsp;        // Process the API response
+&nbsp;        try {
+<b class="fc">&nbsp;            Map&lt;String, Object&gt; responseMap = objectMapper.convertValue(arrayNode.get(0), new TypeReference&lt;&gt;() {</b>
+&nbsp;            });
+<b class="fc">&nbsp;            completeName = (String) responseMap.get(&quot;name&quot;);</b>
+&nbsp;
+&nbsp;            // Return the existing city if present
+<b class="fc">&nbsp;            Optional&lt;City&gt; cityOptional = cityRepository.findByName(completeName);</b>
+<b class="fc">&nbsp;            if (cityOptional.isPresent()) return cityOptional.get();</b>
+&nbsp;
+&nbsp;            // Return a new city object
+<b class="fc">&nbsp;            latitude = (double) responseMap.get(&quot;lat&quot;);</b>
+<b class="fc">&nbsp;            longitude = (double) responseMap.get(&quot;lon&quot;);</b>
+<b class="fc">&nbsp;            countryCode = (String) responseMap.get(&quot;country&quot;);</b>
+<b class="fc">&nbsp;            return new City(completeName, latitude, longitude, countryCode);</b>
+<b class="fc">&nbsp;        } catch (Exception e) {</b>
+<b class="fc">&nbsp;            logger.warning(String.format(&quot;Error when processing retrieved city data for city \&quot;%s\&quot;.&quot;, name));</b>
+<b class="fc">&nbsp;            throw new FailedCityDataImportException();</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Used for preliminary checking of a city name&#39;s validity&lt;br&gt; Refuses malformed names
+&nbsp;     *
+&nbsp;     * @param name complete name of the city to check
+&nbsp;     * @return true for acceptable, false for malformed city name
+&nbsp;     */
+&nbsp;    private boolean nameFormattedCorrectly(String name) {
+<b class="fc">&nbsp;        return (!name.isBlank() &amp;&amp; name.chars().noneMatch(Character::isDigit));</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-07-18 09:15</div>
+</div>
+</body>
+</html>

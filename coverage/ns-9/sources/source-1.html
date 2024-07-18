@@ -1,0 +1,106 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > WeatherDataRepository</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">dev.karlkadak.backend.repository</a>
+</div>
+
+<h1>Coverage Summary for Class: WeatherDataRepository (dev.karlkadak.backend.repository)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+</tr>
+  <tr>
+    <td class="name">WeatherDataRepository$MockitoMock$kxZqJxRW</td>
+  </tr>
+  <tr>
+    <td class="name">WeatherDataRepository$MockitoMock$kxZqJxRW$auxiliary$GRo3NtoE</td>
+  </tr>
+  <tr>
+    <td class="name">WeatherDataRepository$MockitoMock$kxZqJxRW$auxiliary$HfauZvJU</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package dev.karlkadak.backend.repository;
+&nbsp;
+&nbsp;import dev.karlkadak.backend.entity.WeatherData;
+&nbsp;import org.springframework.data.jpa.repository.JpaRepository;
+&nbsp;import org.springframework.stereotype.Repository;
+&nbsp;
+&nbsp;import java.util.Optional;
+&nbsp;
+&nbsp;/**
+&nbsp; * Repository for interacting with the WeatherData table
+&nbsp; */
+&nbsp;@Repository
+&nbsp;public interface WeatherDataRepository extends JpaRepository&lt;WeatherData, Long&gt; {
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Finds the latest {@link dev.karlkadak.backend.entity.WeatherData WeatherData} object for a
+&nbsp;     * {@link dev.karlkadak.backend.entity.City City} with the specified
+&nbsp;     * {@link dev.karlkadak.backend.entity.City#id id}
+&nbsp;     *
+&nbsp;     * @param city_id The {@link dev.karlkadak.backend.entity.City City} object&#39;s
+&nbsp;     *                {@link dev.karlkadak.backend.entity.City#id id}
+&nbsp;     * @return An {@link java.util.Optional} with the latest
+&nbsp;     * {@link dev.karlkadak.backend.entity.WeatherData WeatherData} object for a
+&nbsp;     * {@link dev.karlkadak.backend.entity.City City} with the specified {@link dev.karlkadak.backend.entity.City#id id}
+&nbsp;     * or an empty one if weather data for the {@link dev.karlkadak.backend.entity.City City} with the specified
+&nbsp;     * {@link dev.karlkadak.backend.entity.City#id id} has not been recorded
+&nbsp;     */
+&nbsp;    Optional&lt;WeatherData&gt; findTopByCity_IdOrderByTimestampDesc(Long city_id);
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-07-18 09:15</div>
+</div>
+</body>
+</html>

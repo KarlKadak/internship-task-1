@@ -1,0 +1,299 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > WeatherDataImporter</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">dev.karlkadak.backend.service</a>
+</div>
+
+<h1>Coverage Summary for Class: WeatherDataImporter (dev.karlkadak.backend.service)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">WeatherDataImporter</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (4/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (4/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (46/46)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">WeatherDataImporter$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (5/5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (4/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (47/47)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package dev.karlkadak.backend.service;
+&nbsp;
+&nbsp;import com.fasterxml.jackson.core.JsonProcessingException;
+&nbsp;import com.fasterxml.jackson.core.type.TypeReference;
+&nbsp;import com.fasterxml.jackson.databind.ObjectMapper;
+&nbsp;import dev.karlkadak.backend.entity.City;
+&nbsp;import dev.karlkadak.backend.entity.WeatherData;
+&nbsp;import dev.karlkadak.backend.exception.FailedWeatherDataFetchException;
+&nbsp;import dev.karlkadak.backend.repository.CityRepository;
+&nbsp;import dev.karlkadak.backend.repository.WeatherDataRepository;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.beans.factory.annotation.Value;
+&nbsp;import org.springframework.stereotype.Service;
+&nbsp;import org.springframework.web.client.RestTemplate;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Map;
+&nbsp;import java.util.logging.Logger;
+&nbsp;
+&nbsp;/**
+&nbsp; * Used for importing weather data to the database from &lt;a href=&quot;https://openweathermap.org/api&quot;&gt;OpenWeather API&lt;/a&gt;&lt;br&gt;
+&nbsp; * Also logs the results of imports using {@link java.util.logging.Logger}
+&nbsp; */
+&nbsp;@Service
+&nbsp;public class WeatherDataImporter {
+&nbsp;
+&nbsp;    private final WeatherDataRepository weatherDataRepository;
+&nbsp;    private final CityRepository cityRepository;
+&nbsp;    private final Logger logger;
+&nbsp;    private final RestTemplate restTemplate;
+&nbsp;    private final ObjectMapper objectMapper;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * API key gathered from application.properties which is used for accessing the
+&nbsp;     * &lt;a href=&quot;https://openweathermap.org/api&quot;&gt;OpenWeather API&lt;/a&gt;
+&nbsp;     */
+&nbsp;    @Value(&quot;${openweather.api.key}&quot;)
+&nbsp;    private String apiKey;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    public WeatherDataImporter(WeatherDataRepository weatherDataRepository, CityRepository cityRepository,
+<b class="fc">&nbsp;                               Logger logger, RestTemplate restTemplate, ObjectMapper objectMapper) {</b>
+<b class="fc">&nbsp;        this.weatherDataRepository = weatherDataRepository;</b>
+<b class="fc">&nbsp;        this.cityRepository = cityRepository;</b>
+<b class="fc">&nbsp;        this.logger = logger;</b>
+<b class="fc">&nbsp;        this.restTemplate = restTemplate;</b>
+<b class="fc">&nbsp;        this.objectMapper = objectMapper;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Fetches the weather data of all {@link dev.karlkadak.backend.entity.City City} objects which have
+&nbsp;     * {@link dev.karlkadak.backend.entity.City#importingData importingData} set as {@link java.lang.Boolean#TRUE TRUE}
+&nbsp;     * and saves it to the database
+&nbsp;     */
+&nbsp;    public void defaultImport() {
+<b class="fc">&nbsp;        final List&lt;City&gt; citiesToFetch = cityRepository.findAllByImportingDataTrue();</b>
+<b class="fc">&nbsp;        if (citiesToFetch.isEmpty()) return;</b>
+<b class="fc">&nbsp;        Integer fetchedCityCount = 0;</b>
+&nbsp;
+<b class="fc">&nbsp;        logger.info(String.format(&quot;Starting to fetch weather data for %d cities.&quot;, citiesToFetch.size()));</b>
+&nbsp;
+<b class="fc">&nbsp;        for (City city : citiesToFetch) {</b>
+&nbsp;            try {
+<b class="fc">&nbsp;                fetchAndSave(city);</b>
+<b class="fc">&nbsp;                fetchedCityCount++;</b>
+<b class="fc">&nbsp;            } catch (FailedWeatherDataFetchException e) {</b>
+<b class="fc">&nbsp;                logger.warning(String.format(&quot;Failed fetching weather data for city \&quot;%s\&quot;. Reason: %s&quot;, city.getName(),</b>
+<b class="fc">&nbsp;                                             e.getMessage()));</b>
+&nbsp;            }
+&nbsp;
+<b class="fc">&nbsp;            logger.info(String.format(&quot;Fetched weather data for city \&quot;%s\&quot;.&quot;, city.getName()));</b>
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        logger.info(String.format(&quot;Saved weather data for %d cities.&quot;, fetchedCityCount));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Fetches the weather data of the specified {@link dev.karlkadak.backend.entity.City City} and saves it to the
+&nbsp;     * database
+&nbsp;     *
+&nbsp;     * @param city {@link dev.karlkadak.backend.entity.City City} to fetch weather data about
+&nbsp;     */
+&nbsp;    protected void fetchAndSave(City city) {
+&nbsp;        WeatherData fetchedData;
+&nbsp;
+&nbsp;        // Attempt requesting the weather data, throw a
+&nbsp;        try {
+<b class="fc">&nbsp;            fetchedData = requestData(city);</b>
+<b class="fc">&nbsp;        } catch (Exception e) {</b>
+<b class="fc">&nbsp;            throw new FailedWeatherDataFetchException(e.getMessage());</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        // Save the fetched data to the database
+<b class="fc">&nbsp;        weatherDataRepository.save(fetchedData);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Requests and returns the weather data of the specified city
+&nbsp;     *
+&nbsp;     * @param city {@link dev.karlkadak.backend.entity.City City} to fetch weather data about
+&nbsp;     * @return {@link dev.karlkadak.backend.entity.WeatherData} about the specified
+&nbsp;     * {@link dev.karlkadak.backend.entity.City City}
+&nbsp;     * @throws JsonProcessingException in case of API response processing error
+&nbsp;     */
+&nbsp;    private WeatherData requestData(City city)
+&nbsp;            throws JsonProcessingException {
+&nbsp;        // Initialize datapoint variables
+&nbsp;        final long timestamp;
+<b class="fc">&nbsp;        Double airTemperature = null;</b>
+<b class="fc">&nbsp;        Double windSpeed = null;</b>
+<b class="fc">&nbsp;        Integer humidity = null;</b>
+<b class="fc">&nbsp;        String iconCode = null;</b>
+&nbsp;
+&nbsp;        // Variables needed for performing the API request
+<b class="fc">&nbsp;        Double latitude = city.getCoordinatePair().getLatitude();</b>
+<b class="fc">&nbsp;        Double longitude = city.getCoordinatePair().getLongitude();</b>
+<b class="fc">&nbsp;        String requestUrl = String.format(</b>
+&nbsp;                &quot;https://api.openweathermap.org/data/2.5/weather?units=metric&amp;lat=%f&amp;lon=%f&amp;appid=%s&quot;, latitude,
+&nbsp;                longitude, apiKey);
+&nbsp;        Map&lt;String, Object&gt; responseMap;
+&nbsp;
+&nbsp;        // Process the API response
+<b class="fc">&nbsp;        String jsonResponse = restTemplate.getForObject(requestUrl, String.class);</b>
+<b class="fc">&nbsp;        responseMap = objectMapper.readValue(jsonResponse, new TypeReference&lt;&gt;() {</b>
+&nbsp;        });
+<b class="fc">&nbsp;        timestamp = ((Integer) responseMap.get(&quot;dt&quot;)).longValue();</b>
+&nbsp;        try {
+<b class="fc">&nbsp;            List&lt;Map&lt;String, Object&gt;&gt; weatherList = (List&lt;Map&lt;String, Object&gt;&gt;) responseMap.get(&quot;weather&quot;);</b>
+<b class="fc">&nbsp;            Map&lt;String, Object&gt; weatherObject = weatherList.get(0);</b>
+<b class="fc">&nbsp;            iconCode = (String) weatherObject.get(&quot;icon&quot;);</b>
+<b class="fc">&nbsp;        } catch (Exception _) {</b>
+&nbsp;        }
+&nbsp;        try {
+<b class="fc">&nbsp;            Map&lt;String, Object&gt; mainObject = (Map&lt;String, Object&gt;) responseMap.get(&quot;main&quot;);</b>
+<b class="fc">&nbsp;            Map&lt;String, Object&gt; mainData = (Map&lt;String, Object&gt;) mainObject;</b>
+<b class="fc">&nbsp;            airTemperature = (Double) mainData.get(&quot;temp&quot;);</b>
+<b class="fc">&nbsp;            humidity = (Integer) mainData.get(&quot;humidity&quot;);</b>
+<b class="fc">&nbsp;        } catch (Exception _) {</b>
+&nbsp;        }
+&nbsp;        try {
+<b class="fc">&nbsp;            Map&lt;String, Object&gt; windObject = (Map&lt;String, Object&gt;) responseMap.get(&quot;wind&quot;);</b>
+<b class="fc">&nbsp;            Map&lt;String, Object&gt; windData = (Map&lt;String, Object&gt;) windObject;</b>
+<b class="fc">&nbsp;            windSpeed = (Double) windData.get(&quot;speed&quot;);</b>
+<b class="fc">&nbsp;        } catch (Exception _) {</b>
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        return new WeatherData(city, timestamp, airTemperature, windSpeed, humidity, iconCode);</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-07-18 09:15</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,114 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > CityRepository</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">dev.karlkadak.backend.repository</a>
+</div>
+
+<h1>Coverage Summary for Class: CityRepository (dev.karlkadak.backend.repository)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+</tr>
+  <tr>
+    <td class="name">CityRepository$MockitoMock$G9x0zvoY</td>
+  </tr>
+  <tr>
+    <td class="name">CityRepository$MockitoMock$G9x0zvoY$auxiliary$DmtpCGgO</td>
+  </tr>
+  <tr>
+    <td class="name">CityRepository$MockitoMock$G9x0zvoY$auxiliary$oKMfHnPj</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package dev.karlkadak.backend.repository;
+&nbsp;
+&nbsp;import dev.karlkadak.backend.entity.City;
+&nbsp;import org.springframework.data.jpa.repository.JpaRepository;
+&nbsp;import org.springframework.stereotype.Repository;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Optional;
+&nbsp;
+&nbsp;/**
+&nbsp; * Repository for interacting with the WeatherData table
+&nbsp; */
+&nbsp;@Repository
+&nbsp;public interface CityRepository extends JpaRepository&lt;City, Long&gt; {
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Finds the {@link dev.karlkadak.backend.entity.City City} object with the specified
+&nbsp;     * {@link dev.karlkadak.backend.entity.City#name name}
+&nbsp;     *
+&nbsp;     * @param name The {@link dev.karlkadak.backend.entity.City City} object&#39;s
+&nbsp;     *             {@link dev.karlkadak.backend.entity.City#name name}
+&nbsp;     * @return An {@link java.util.Optional} with the {@link dev.karlkadak.backend.entity.City City} object with the
+&nbsp;     * specified {@link dev.karlkadak.backend.entity.City#name name} or an empty one if a
+&nbsp;     * {@link dev.karlkadak.backend.entity.City City} with the specified
+&nbsp;     * {@link dev.karlkadak.backend.entity.City#name name} was not found
+&nbsp;     */
+&nbsp;    Optional&lt;City&gt; findByName(String name);
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Finds all {@link dev.karlkadak.backend.entity.City City} objects which have
+&nbsp;     * {@link dev.karlkadak.backend.entity.City#importingData importingData} set as {@link java.lang.Boolean#TRUE TRUE}
+&nbsp;     *
+&nbsp;     * @return A {@link java.util.List} containing all {@link dev.karlkadak.backend.entity.City City} objects which have
+&nbsp;     * {@link dev.karlkadak.backend.entity.City#importingData importingData} set as {@link java.lang.Boolean#TRUE TRUE}
+&nbsp;     */
+&nbsp;    List&lt;City&gt; findAllByImportingDataTrue();
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-07-18 09:15</div>
+</div>
+</body>
+</html>

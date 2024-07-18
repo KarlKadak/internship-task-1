@@ -1,0 +1,9 @@
+dev.karlkadak.backend
+dev.karlkadak.backend.config
+dev.karlkadak.backend.controller
+dev.karlkadak.backend.cron
+dev.karlkadak.backend.dto
+dev.karlkadak.backend.entity
+dev.karlkadak.backend.exception
+dev.karlkadak.backend.repository
+dev.karlkadak.backend.service

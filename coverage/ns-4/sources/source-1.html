@@ -1,0 +1,156 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > WeatherDataImportScheduler</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">dev.karlkadak.backend.cron</a>
+</div>
+
+<h1>Coverage Summary for Class: WeatherDataImportScheduler (dev.karlkadak.backend.cron)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">WeatherDataImportScheduler</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (3/3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (8/8)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package dev.karlkadak.backend.cron;
+&nbsp;
+&nbsp;import dev.karlkadak.backend.service.WeatherDataImporter;
+&nbsp;import lombok.Setter;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.beans.factory.annotation.Value;
+&nbsp;import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
+&nbsp;import org.springframework.scheduling.support.CronTrigger;
+&nbsp;import org.springframework.stereotype.Component;
+&nbsp;
+&nbsp;import java.util.logging.Logger;
+&nbsp;
+&nbsp;/**
+&nbsp; * Used for scheduling the weather data importing using
+&nbsp; * {@link dev.karlkadak.backend.service.WeatherDataImporter WeatherDataImporter} and
+&nbsp; * {@link org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler ThreadPoolTaskScheduler}&lt;br&gt; Also logs the
+&nbsp; * scheduling of imports using {@link java.util.logging.Logger}
+&nbsp; */
+&nbsp;@Component
+&nbsp;public class WeatherDataImportScheduler {
+&nbsp;
+&nbsp;    private final ThreadPoolTaskScheduler taskScheduler;
+&nbsp;    private final WeatherDataImporter weatherDataImporter;
+&nbsp;    private final Logger logger;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Cron expression gathered from application.properties based on which {@link #taskScheduler} runs
+&nbsp;     * {@link dev.karlkadak.backend.service.WeatherDataImporter#defaultImport WeatherDataImporter.defaultImport}
+&nbsp;     */
+&nbsp;    @Value(&quot;${importer.cron.expression}&quot;)
+<b class="fc">&nbsp;    @Setter</b>
+&nbsp;    private String importerCronExpression;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    public WeatherDataImportScheduler(ThreadPoolTaskScheduler taskScheduler, WeatherDataImporter weatherDataImporter,
+<b class="fc">&nbsp;                                      Logger logger) {</b>
+<b class="fc">&nbsp;        this.taskScheduler = taskScheduler;</b>
+<b class="fc">&nbsp;        this.weatherDataImporter = weatherDataImporter;</b>
+<b class="fc">&nbsp;        this.logger = logger;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Initially runs and schedules the
+&nbsp;     * {@link dev.karlkadak.backend.service.WeatherDataImporter#defaultImport WeatherDataImporter.defaultImport} method
+&nbsp;     * to run using the cron expression specified in application.properties
+&nbsp;     */
+&nbsp;    public void scheduleImport() {
+<b class="fc">&nbsp;        weatherDataImporter.defaultImport();</b>
+<b class="fc">&nbsp;        taskScheduler.schedule(weatherDataImporter::defaultImport, new CronTrigger(importerCronExpression));</b>
+<b class="fc">&nbsp;        logger.info(&quot;Scheduled weather data fetching.&quot;);</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-07-18 09:15</div>
+</div>
+</body>
+</html>
