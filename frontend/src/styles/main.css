@@ -6,6 +6,11 @@
 
 .name-cell {
   transition: all 0.25s;
+  width: 100%;
+}
+
+.name-cell.active {
+  background-color: lightgray;
 }
 
 .name-cell:hover {

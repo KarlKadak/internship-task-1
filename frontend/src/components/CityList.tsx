@@ -80,6 +80,21 @@ const CityList = forwardRef<CityListRef, CityListProps>((props, ref) => {
     );
   };
 
+  const buildNameCell = (city: CityResponse) => {
+    const innerElement = (
+      <div style={{ marginLeft: "0.5em", marginRight: "0.5em" }}>
+        {city.name}
+      </div>
+    );
+    if (props.selectedCity === city.id)
+      return <td className="name-cell active">{innerElement}</td>;
+    return (
+      <td className="name-cell" onClick={() => props.selectCity(city.id)}>
+        {innerElement}
+      </td>
+    );
+  };
+
   // Return messages for different situations
   if (loading) return constructMessage("Loading...");
   if (error) return constructMessage(error);
@@ -107,14 +122,7 @@ const CityList = forwardRef<CityListRef, CityListProps>((props, ref) => {
                 ) : null}
               </td>
               {/* Add the city name */}
-              <td
-                className="name-cell"
-                onClick={() => props.selectCity(city.id)}
-              >
-                <div style={{ marginLeft: "0.5em", marginRight: "0.5em" }}>
-                  {city.name}
-                </div>
-              </td>
+              {buildNameCell(city)}
               {/* Add a delete button */}
               <td className="delete-cell" onClick={() => deleteCity(city.id)}>
                 <div>
